@@ -76,7 +76,7 @@ class BMScraper(FileNameUtils):
 
         for subreddit in self.subreddits:
             workpool.put(DownloadJob(self._requests,
-                                     'https://www.reddit.com/r/{}/stylesheet'.format(subreddit),
+                                     'https://old.reddit.com/r/{}/stylesheet'.format(subreddit),
                                      retry=5,
                                      rate_limit_lock=self.rate_limit_lock,
                                      callback=self._callback_fetch_stylesheet,
@@ -130,7 +130,7 @@ class BMScraper(FileNameUtils):
         if self.user and self.password:
             body = {'user': self.user, 'passwd': self.password, "rem": False}
             self.rate_limit_lock and self.rate_limit_lock.acquire()
-            self._requests.post('https://www.reddit.com/api/login', body)
+            self._requests.post('https://old.reddit.com/api/login', body)
 
         self._fetch_css()
 

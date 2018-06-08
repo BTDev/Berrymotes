@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # --------------------------------------------------------------------
 #
 # Copyright (C) 2013 Marminator <cody_y@shaw.ca>
@@ -32,8 +33,8 @@ factory = UserscriptEmotesProcessorFactory(single_emotes_filename=os.path.join('
                                            apng_url=CDN_ORIGIN + '/images/{}/{}')
 
 scraper = BMScraper(factory)
-scraper.user = 'ponymoteharvester'
-scraper.password = 'berry_punch'
+scraper.user = 'ponymoteharvester2'
+scraper.password = '7bbBiNdCgdrL2iiCXyRZqiT6odPFXY'
 scraper.subreddits = subreddits
 scraper.image_blacklist = image_blacklist
 scraper.nsfw_subreddits = nsfw_subreddits

@@ -575,7 +575,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.insecure.fi/berrymotes
         Bem.whenExists(target, function () {
             var emoteButton = $('<div/>').addClass('berrymotes_button').appendTo($(target)).text("Emotes");
             emoteButton.css('margin-right', '2px');
-            emoteButton.css('background', 'url(//berrymotes.com/assets/bp.png) no-repeat scroll left center transparent');
+            emoteButton.css('background', 'url(' + Bem.cdn_origin + '/css/bp.png) no-repeat scroll left center transparent');
         });
     };
 
