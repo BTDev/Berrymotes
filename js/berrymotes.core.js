@@ -11,6 +11,9 @@
  */
 
 Bem = typeof Bem === "undefined" ? {} : Bem;
+Bem.origin = Bem.origin || 'https://berrytube.insecure.fi/berrymotes';
+Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.insecure.fi/berrymotes';
+
 (function ($) {
     var settingsSchema = [
         { key: 'enabled', type: "bool", default: true },

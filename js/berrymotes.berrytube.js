@@ -11,6 +11,8 @@
 Bem = typeof Bem === "undefined" ? {} : Bem;
 Bem.jQuery = jQuery;
 Bem.community = "bt";
+Bem.origin = Bem.origin || 'https://berrytube.insecure.fi/berrymotes';
+Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.insecure.fi/berrymotes';
 
 var berrytube_settings_schema = [
     { key: 'drunkMode', type: "bool", default: false },
@@ -28,12 +30,12 @@ Bem.berrySiteInit = function () {
         if (document.body.style.webkitFilter !== undefined) {
             invertScript = document.createElement('script');
             invertScript.type = 'text/javascript';
-            invertScript.src = 'http://berrymotes.com/assets/berrymotes.webkit.invert.js';
+            invertScript.src = Bem.cdn_origin + '/js/berrymotes.webkit.invert.js';
             document.body.appendChild(invertScript);
         } else {
             invertScript = document.createElement('script');
             invertScript.type = 'text/javascript';
-            invertScript.src = 'http://berrymotes.com/assets/berrymotes.invertfilter.js';
+            invertScript.src = Bem.cdn_origin + '/js/berrymotes.invertfilter.js';
             document.body.appendChild(invertScript);
         }
         Bem.monkeyPatchChat();
@@ -106,9 +108,9 @@ $.fn.bindFirst = function (name, fn) {
 
 function marmReactiveMode() {
     if (Bem.debug)
-        $("head").append('<link rel="stylesheet" type="text/css" href="http://berrymotes.com/assets/reactive.staging.css" />');
+        $("head").append('<link rel="stylesheet" type="text/css" href="' + Bem.origin + '/css/reactive.staging.css" />');
     else
-        $("head").append('<link rel="stylesheet" type="text/css" href="http://berrymotes.com/assets/reactive.css" />');
+        $("head").append('<link rel="stylesheet" type="text/css" href="' + Bem.origin + '/css/reactive.css" />');
 
     $('.wrapper').first().hide();
 
@@ -333,7 +335,7 @@ Bem.settings = {
     }
 };
 
-Bem.settings.set('siteWhitelist', ['berrytube.tv', 'www.berrytube.tv']);
+Bem.settings.set('siteWhitelist', ['berrytube.tv', 'www.berrytube.tv', 'berrytube.insecure.fi']);
 
 
 //Bem.emoteRefresh = function() {
@@ -346,7 +348,7 @@ Bem.emoteRefresh = function (cache) {
     cache = cache !== false;
     $.ajax({
         cache: cache,
-        url: '//berrymotes.com/assets/berrymotes_json_data.json',
+        url: Bem.data_url || (Bem.cdn_origin + '/data/berrymotes_json_data.json'),
         dataType: 'json',
         success: function (data) {
             Bem.emotes = data;
@@ -355,6 +357,9 @@ Bem.emoteRefresh = function (cache) {
     });
 };
 
+Bem.apngSupported = true;
+
+/*
 Bem.settings.get('apngSupported', function (apngSupported) {
     if (apngSupported === null || apngSupported === undefined) {
         (function () {
@@ -369,7 +374,7 @@ Bem.settings.get('apngSupported', function (apngSupported) {
                     // If we don't have apng support we're gonna load up the canvas hack. No reason to load if apng support exists.
                     var script = document.createElement('script');
                     script.type = 'text/javascript';
-                    script.src = 'http://berrymotes.com/assets/apng-canvas.min.js';
+                    script.src = Bem.origin + '/js/thirdparty/apng-canvas.min.js';
                     document.body.appendChild(script);
                 }
             };
@@ -383,14 +388,10 @@ Bem.settings.get('apngSupported', function (apngSupported) {
         Bem.apngSupported = false;
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = 'http://berrymotes.com/assets/apng-canvas.min.js';
+        script.src = Bem.origin + '/js/thirdparty/apng-canvas.min.js';
         document.body.appendChild(script);
     } else {
         Bem.apngSupported = true;
     }
 });
-
-var script = document.createElement('script');
-script.type = 'text/javascript';
-script.src = 'http://berrymotes.com/assets/berrymotes.core.js';
-document.body.appendChild(script);
+*/

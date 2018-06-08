@@ -25,10 +25,11 @@ from data import *
 from json import dumps
 import os
 
+CDN_ORIGIN = 'https://cdn.berrytube.insecure.fi/berrymotes'
 
 factory = UserscriptEmotesProcessorFactory(single_emotes_filename=os.path.join('..', 'single_emotes', '{}', '{}.png'),
                                            apng_dir=os.path.join('..', 'images'),
-                                           apng_url='http://berrymotes.com/images/{}/{}')
+                                           apng_url=CDN_ORIGIN + '/images/{}/{}')
 
 scraper = BMScraper(factory)
 scraper.user = 'ponymoteharvester'
@@ -38,18 +39,18 @@ scraper.image_blacklist = image_blacklist
 scraper.nsfw_subreddits = nsfw_subreddits
 scraper.emote_info = emote_info
 scraper.rate_limit_lock = TokenBucket(15, 30)
-scraper.tags_data = requests.get("http://btc.berrytube.tv/berrymotes/data.js").json()
+scraper.tags_data = requests.get(CDN_ORIGIN + "/data/tags.js").json()
 
 start = time.time()
 scraper.scrape()
 logger.info("Finished scrape in {}.".format(time.time() - start))
 
-f = open(os.path.join('..', 'js', 'berrymotes_data.js'), 'wb')
+f = open(os.path.join('..', 'data', 'berrymotes_data.js'), 'wb')
 json = dumps(scraper.emotes, separators=(',', ':'))
 f.write(''.join(["var berryEmotes=", json, ";"]))
 f.close()
 
-f = open(os.path.join('..', 'js', 'berrymotes_json_data.json'), 'wb')
+f = open(os.path.join('..', 'data', 'berrymotes_json_data.json'), 'wb')
 f.write(dumps(scraper.emotes, separators=(',', ':')))
 f.close()
 
