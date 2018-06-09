@@ -8,10 +8,71 @@
  * COPYING for more details.
  */
 
+.berrymotes_button {
+    cursor: pointer;
+    float: right;
+    font-weight: bold;
+    height: 20px;
+    line-height: 20px;
+    padding-left: 20px;
+}
+
+/* Dialog windows (search, settings, etc.) */
+.berrymotes.dialogWindow {
+    font-family: sans-serif;
+	background: white;
+	color: black;
+    font-size: 12px;
+	position: absolute;
+	border: 1px solid black;
+	-moz-box-shadow: 3px 3px 8px #000;
+	-webkit-box-shadow: 3px 3px 8px #000;
+	box-shadow: 3px 3px 8px #000;
+}
+.berrymotes.dialogWindow .dialogContent {
+	padding: 5px;
+}
+.berrymotes.dialogWindow .dialogToolbar {
+	background: #DEDEDE;
+	padding: 2px;
+	border-bottom: 1px solid black;
+	margin-bottom: 5px;
+	cursor: move;
+}
+.berrymotes.dialogWindow .dialogTitlebar {
+	float: left;
+}
+.berrymotes.dialogWindow .dialogToolbar .close {
+	background: red;
+	cursor: pointer;
+	width: 1em;
+	border: 1px solid black;
+	height: 1em;
+	float: right;
+}
+.berrymotes.dialogWindow .settings_span {
+    margin-right: 5px;
+}
+.berrymotes.dialogWindow input {
+	border: 1px solid black;
+}
+.berrymotes.dialogWindow input.small {
+	width: 90px;
+}
+
+.berrymotes_search {
+    width: 300px;
+}
+
+.berrymotes_search_results {
+    margin: 5px 0px;
+}
+
 .berryemote_hover>span {
     display: none !important;
 }
 
+/* Hover-related CSS */
 .berryemote_hover .berryemote_placeholder {
     display: inline-block !important;
     background-color: lightcyan;
@@ -20,10 +81,6 @@
 
 .berryemote_hover {
     position: relative;
-}
-
-.berryemote_altText{
-    color: gray;
 }
 
 .berryemote_hover:hover>.berryemote-wrapper-outer,
@@ -39,6 +96,7 @@
     z-index: 10;
 }
 
+/* Animations */
 @-webkit-keyframes spin {
     from {
         -webkit-transform: rotate(0deg) rotateX(0deg) rotateY(0deg);
