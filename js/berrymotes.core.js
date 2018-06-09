@@ -11,8 +11,8 @@
  */
 
 Bem = typeof Bem === "undefined" ? {} : Bem;
-Bem.origin = Bem.origin || 'https://berrytube.insecure.fi/berrymotes';
-Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.insecure.fi/berrymotes';
+Bem.origin = Bem.origin || 'https://berrytube.tv/berrymotes';
+Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
 
 (function ($) {
     var settingsSchema = [
@@ -617,8 +617,9 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.insecure.fi/berrymotes
         else {
             if (Bem.debug) console.log('starting');
 
-            $("head").append('<link rel="stylesheet" type="text/css" ' +
-                'href="//berrymotes.com/assets/berrymotes.core.css" />');
+            if (!Bem.skip_css) {
+                $("head").append('<link rel="stylesheet" type="text/css" href="' + Bem.origin + '/berryemotecore.css" />');
+            }
 
             Bem.berrySiteInit();
             Bem.listenForInput();
