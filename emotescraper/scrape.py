@@ -26,7 +26,7 @@ from data import *
 from json import dumps
 import os
 
-CDN_ORIGIN = 'https://cdn.berrytube.insecure.fi/berrymotes'
+CDN_ORIGIN = 'https://cdn.berrytube.tv/berrymotes'
 
 factory = UserscriptEmotesProcessorFactory(single_emotes_filename=os.path.join('..', 'single_emotes', '{}', '{}.png'),
                                            apng_dir=os.path.join('..', 'images'),

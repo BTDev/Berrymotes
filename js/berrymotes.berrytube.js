@@ -335,7 +335,7 @@ Bem.settings = {
     }
 };
 
-Bem.settings.set('siteWhitelist', ['berrytube.tv', 'www.berrytube.tv', 'berrytube.insecure.fi']);
+Bem.settings.set('siteWhitelist', ['berrytube.tv', 'www.berrytube.tv']);
 
 
 //Bem.emoteRefresh = function() {
