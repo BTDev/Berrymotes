@@ -581,6 +581,10 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
 
     Bem.listenForInput = function () {
         $(window).keydown(function (event) {
+            if (event.altKey || event.shiftKey) {
+                return;
+            }
+
             if ((event.keyCode == 69 && event.ctrlKey) ||
                 (Bem.drunkMode && event.ctrlKey && (event.keyCode == 87 || event.keyCode == 82)) ||
                 (event.keyCode == 27 && $('.berrymotes_search_results').length)) {
