@@ -21,7 +21,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         { key: 'showNsfwEmotes', type: "bool", default: false },
         { key: 'onlyHover', type: "bool", default: false },
         { key: 'onlyHoverNSFW', type: "bool", default: false },
-        { key: 'maxEmoteHeight', type: "int", default: 200 },
+        { key: 'maxEmoteHeight', type: "int", default: 120 },
         { key: 'debug', type: "bool", default: false },
         { key: 'enableSlide', type: "bool", default: true },
         { key: 'enableSpin', type: "bool", default: true },
