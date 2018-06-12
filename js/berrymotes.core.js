@@ -483,7 +483,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             }
             $emote.css('background-position', position_string);
             if ($emote.is('.canvasapng') == false) {
-                var bgImage = emote['apng_url'] || emote['background-image'];
+                var bgImage = emote['background-image'] || emote['apng_url'];
                 $emote.css('background-image', ['url(', bgImage, ')'].join(''));
             }
             var flags = $emote.attr('flags');
