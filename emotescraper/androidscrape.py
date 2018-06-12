@@ -23,8 +23,8 @@ import gzip
 
 factory = AndroidEmotesProcessorFactory(single_emotes_filename=os.path.join( '..', 'single_emotes', '{}', '{}.png'))
 scraper = BMScraper(factory)
-scraper.user = 'ponymoteharvester2'
-scraper.password = '7bbBiNdCgdrL2iiCXyRZqiT6odPFXY'
+scraper.user = os.environ['REDDIT_USERNAME']
+scraper.password = os.environ['REDDIT_PASSWORD']
 scraper.subreddits = subreddits
 scraper.image_blacklist = image_blacklist_android
 scraper.nsfw_subreddits = nsfw_subreddits

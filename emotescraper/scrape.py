@@ -33,8 +33,8 @@ factory = UserscriptEmotesProcessorFactory(single_emotes_filename=os.path.join('
                                            apng_url=CDN_ORIGIN + '/images/{}/{}')
 
 scraper = BMScraper(factory)
-scraper.user = 'ponymoteharvester2'
-scraper.password = '7bbBiNdCgdrL2iiCXyRZqiT6odPFXY'
+scraper.user = os.environ['REDDIT_USERNAME']
+scraper.password = os.environ['REDDIT_PASSWORD']
 scraper.subreddits = subreddits
 scraper.image_blacklist = image_blacklist
 scraper.nsfw_subreddits = nsfw_subreddits
