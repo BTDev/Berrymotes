@@ -20,7 +20,6 @@ var berrytube_settings_schema = [
 ];
 
 Bem.loggingIn = false;
-Bem.refreshers = ['marminator', 'toastdeib', 'miggyb', 'jerick'];
 
 Bem.berrySiteInit = function () {
     Bem.loadSettings(berrytube_settings_schema, function () {
@@ -105,82 +104,6 @@ $.fn.bindFirst = function (name, fn) {
         handlers.splice(0, 0, handler);
     });
 };
-
-function marmReactiveMode() {
-    if (Bem.debug)
-        $("head").append('<link rel="stylesheet" type="text/css" href="' + Bem.origin + '/css/reactive.staging.css" />');
-    else
-        $("head").append('<link rel="stylesheet" type="text/css" href="' + Bem.origin + '/css/reactive.css" />');
-
-    $('.wrapper').first().hide();
-
-    var pollpane = $('#pollpane');
-    $('#pollControl').appendTo(pollpane);
-    var pollClose = $('<div class="close"></div>');
-    pollpane.prepend(pollClose);
-    pollClose.click(function () {
-        pollpane.hide();
-    });
-
-    var showPollpane = function () {
-        pollpane.show();
-    };
-
-    Bem.whenExists('#chatControls', function () {
-        if (Bem.debug) console.log('Injecting poll button.');
-        var menu = $('<div/>').addClass('settings').appendTo($('#chatControls')).text("Poll");
-        menu.css('margin-right', '2px');
-        menu.css('background', 'none');
-        menu.click(function () {
-            showPollpane();
-        });
-    });
-
-    var playlist = $('#leftpane');
-    var playlistClose = $('<div class="close"></div>');
-    playlist.prepend(playlistClose);
-    playlistClose.click(function () {
-        playlist.hide();
-    });
-
-    $(window).bindFirst('keydown', function (event) {
-        if (event.keyCode == 27) {
-            playlist.hide();
-            return true;
-        }
-        if (!(event.keyCode == 70 && event.ctrlKey)) return true;
-        event.preventDefault();
-        playlist.show();
-        return false;
-    });
-
-    Bem.whenExists('#chatControls', function () {
-        if (Bem.debug) console.log('Injecting playlist button.');
-        var menu = $('<div/>').addClass('settings').appendTo($('#chatControls')).text("Playlist");
-        menu.css('margin-right', '2px');
-        menu.css('background', 'none');
-        menu.click(function () {
-            playlist.show();
-            smartRefreshScrollbar();
-            realignPosHelper();
-            if (getCookie("plFolAcVid") == "1") {
-                var x = ACTIVE.domobj.index();
-                x -= 2;
-                if (x < 0) x = 0;
-                scrollToPlEntry(x);
-            }
-        });
-    });
-
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-        $("head").append('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>');
-    }
-    Bem.whenExists('#chatControls', function () {
-        if (NAME) {
-            $('#headbar').hide();
-        }
-    });
-}
 
 Bem.monkeyPatchChat = function () {
     var oldAddChatMsg = addChatMsg;
@@ -337,13 +260,6 @@ Bem.settings = {
 
 Bem.settings.set('siteWhitelist', ['berrytube.tv', 'www.berrytube.tv']);
 
-
-//Bem.emoteRefresh = function() {
-//    $.getScript('http://backstage.berrytube.tv/marminator/berrymotes_data.js', function () {
-//        Bem.buildEmoteMap();
-//    });
-//};
-
 Bem.emoteRefresh = function (cache) {
     cache = cache !== false;
     $.ajax({
@@ -358,40 +274,3 @@ Bem.emoteRefresh = function (cache) {
 };
 
 Bem.apngSupported = true;
-
-/*
-Bem.settings.get('apngSupported', function (apngSupported) {
-    if (apngSupported === null || apngSupported === undefined) {
-        (function () {
-            var apngTest = new Image(),
-                ctx = document.createElement("canvas").getContext("2d");
-            apngTest.onload = function () {
-                ctx.drawImage(apngTest, 0, 0);
-                apngSupported = ctx.getImageData(0, 0, 1, 1).data[3] === 0;
-                localStorage.setItem('apngSupported', apngSupported);
-                Bem.apngSupported = apngSupported;
-                if (!apngSupported) {
-                    // If we don't have apng support we're gonna load up the canvas hack. No reason to load if apng support exists.
-                    var script = document.createElement('script');
-                    script.type = 'text/javascript';
-                    script.src = Bem.origin + '/js/thirdparty/apng-canvas.min.js';
-                    document.body.appendChild(script);
-                }
-            };
-            apngTest.src =
-                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACGFjVEwAAAABAAAAAcMq2TYAAAANSURBVAiZY2BgYPgPAAEEAQB9ssjfAAAAGmZjVEwAAAAAAAAAAQAAAAEAAAAAAAAAAAD6A+gBAbNU+2sAAAARZmRBVAAAAAEImWNgYGBgAAAABQAB6MzFdgAAAABJRU5ErkJggg==";
-            // frame 1 (skipped on apng-supporting browsers): [0, 0, 0, 255]
-            // frame 2: [0, 0, 0, 0]
-        }());
-    }
-    else if (apngSupported === 'false') {
-        Bem.apngSupported = false;
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = Bem.origin + '/js/thirdparty/apng-canvas.min.js';
-        document.body.appendChild(script);
-    } else {
-        Bem.apngSupported = true;
-    }
-});
-*/

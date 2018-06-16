@@ -487,7 +487,6 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                 $emote.css('background-image', ['url(', bgImage, ')'].join(''));
             }
             var flags = $emote.attr('flags');
-            if (flags) flags = flags.replace('-refresh', '');
 
             $emote.attr('title', [emote.names,
                 ' from /r/',
@@ -525,18 +524,6 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                             $this.css('height', height);
                         }
                     });
-            }
-            username = username || "";
-            if (Bem.refreshers && Bem.refreshers.indexOf(username.toLowerCase()) > -1) {
-                var flags = $emote.attr('flags').split('-');
-                if (flags.indexOf('refresh') >= 0) {
-                    var sleep = Math.random() * 30;
-                    sleep = (sleep + 1) * 1000;
-                    if (Bem.debug) console.log('Got refresh, going in: ', sleep);
-                    setTimeout(function () {
-                        Bem.emoteRefresh(false);
-                    }, sleep);
-                }
             }
             $emote.removeAttr('flags');
         });
