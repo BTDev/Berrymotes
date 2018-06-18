@@ -115,6 +115,7 @@ subreddits = [
     "kimberlybt",
     "kimsderpydoodles",
     "KingEmotes",
+    "kitsemotediary",
     "littlecolt",
     "littlemissbloomotes",
     "lunanet",
