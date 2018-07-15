@@ -167,7 +167,6 @@ Bem.monkeyPatchTabComplete = function () {
         if (typeof ts != "undefined" && ts != false) hasTS = true;
 
         if (hasTS == false) {
-            console.log("New Tab");
             var endword = /\\\\([^ ]+)$/i;
             var m = chat.match(endword);
             if (m) {
@@ -180,10 +179,12 @@ Bem.monkeyPatchTabComplete = function () {
             var re = new RegExp('^' + emoteToComplete + '.*', 'i');
 
             var ret = [];
-            for (var i in Bem.map) {
-                if (Bem.isEmoteEligible(Bem.emotes[Bem.map[i]])) {
-                    var m = i.match(re);
-                    if (m) ret.push(m[0]);
+            for (let emote of Bem.emotes) {
+                if (Bem.isEmoteEligible(emote)) {
+                    for (let name of emote.names) {
+                        var m = name.match(re);
+                        if (m) ret.push(m[0]);
+                    }
                 }
             }
             ret.sort();
