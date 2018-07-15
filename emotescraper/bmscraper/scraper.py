@@ -218,6 +218,8 @@ class BMScraper(FileNameUtils):
         key_func = lambda e: e[1]
         for emote, group in itertools.groupby(sorted(emotes_staging.iteritems(), key=key_func), key_func):
             emote['names'] = [a[0].encode('ascii', 'ignore') for a in group]
+            if 'tags' not in emote:
+                emote['tags'] = []
             for name in emote['names']:
                 meta_data = next((x for x in self.emote_info if x['name'] == name), None)
 
@@ -246,6 +248,7 @@ class BMScraper(FileNameUtils):
 
             if subreddit in self.nsfw_subreddits:
                 emote['nsfw'] = True
+                emote['tags'].append('nsfw')
             emote['sr'] = subreddit
 
             # Sometimes people make css errors, fix those.

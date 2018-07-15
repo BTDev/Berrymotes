@@ -99,7 +99,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
     Bem.applyEmotesToStr = function (str) {
         var match;
         while (match = Bem.emoteRegex.exec(str)) {
-            var emoteId = Bem.map[match[2]];
+            var emoteId = Bem.map.get(match[2]);
             if (emoteId !== undefined) {
                 var emote = Bem.emotes[emoteId];
                 if (Bem.isEmoteEligible(emote)) {
@@ -118,7 +118,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         var href = a.getAttribute('href').substring(1).split('-');
         var name = href.shift();
         var altText = a.getAttribute('title');
-        var emoteId = Bem.map[name];
+        var emoteId = Bem.map.get(name);
         if (emoteId) {
             var $a = $(a);
             var emote = Bem.emotes[emoteId];
@@ -189,7 +189,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             var str = textNode.nodeValue;
             var emoteLocations = [];
             while (match = Bem.emoteRegex.exec(str)) {
-                var emoteId = Bem.map[match[2]];
+                var emoteId = Bem.map.get(match[2]);
                 if (emoteId !== undefined) {
                     var emote = Bem.emotes[emoteId];
                     if (Bem.isEmoteEligible(emote)) {
@@ -530,20 +530,15 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
     };
 
     Bem.buildEmoteMap = function () {
-        Bem.map = {};
+        Bem.map = new Map();
         var max = Bem.emotes.length;
         for (var i = 0; i < max; ++i) {
             var berryemote = Bem.emotes[i];
-            for (var j = 0; j < berryemote.names.length; ++j) {
-                Bem.map[berryemote.names[j]] = i;
+            if (berryemote.id === undefined) {
                 berryemote.id = i;
             }
-            if (!berryemote.tags) berryemote.tags = [];
-            if (berryemote.apng_url) {
-                berryemote.tags.push('animated');
-            }
-            if (berryemote.nsfw) {
-                berryemote.tags.push('nsfw');
+            for (var j = 0; j < berryemote.names.length; ++j) {
+                Bem.map.set(berryemote.names[j], i);
             }
         }
     };

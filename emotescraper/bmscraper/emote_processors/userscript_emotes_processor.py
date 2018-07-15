@@ -59,12 +59,13 @@ class UserscriptEmotesProcessor(BasicEmotesProcessor, APNGCheck):
 
     def process_emote(self, emote):
         BasicEmotesProcessor.process_emote(self, emote)
-        if self._apng:
-            with self.scraper.mutex:
-                emote['apng_url'] = self._apng
         if 'tags' not in emote:
             with self.scraper.mutex:
                 emote['tags'] = ['untagged', 'new']
+        if self._apng:
+            with self.scraper.mutex:
+                emote['apng_url'] = self._apng
+                emote['tags'].append('animated')
 
     def load_image(self, image_file):
         BasicEmotesProcessor.load_image(self, image_file)
