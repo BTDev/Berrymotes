@@ -396,14 +396,15 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                             }
                         }
 
-                        slideAnimations.push(['slideleft', slideSpeed, 'infinite ease'].join(' '));
                         if (!brody && !spin) {
                             if (flags[i] == 'slide' && reverse) {
-                                slideAnimations.push(['!slideflip', slideSpeed, 'infinite ease'].join(' '));
+                                slideAnimations.push(['!slideleft', slideSpeed, 'infinite ease'].join(' '));
                             }
                             else {
-                                slideAnimations.push(['slideflip', slideSpeed, 'infinite ease'].join(' '));
+                                slideAnimations.push(['slideleft', slideSpeed, 'infinite ease'].join(' '));
                             }
+                        } else {
+                            slideAnimations.push(['slideleftnoflip', slideSpeed, 'infinite ease'].join(' '));
                         }
                         if (!needsWrapper) {
                             animations.push.apply(animations, slideAnimations);
@@ -448,11 +449,16 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                         Bem.wrapEmoteHeight($emote, brody_height);
                     }
                 }
-                if (animations.length > 0 && ttl) {
-                    Bem.effectStack.push({"ttl": ttl, "$emote": $emote});
+
+                if (animations.length > 0) {
+                    if (ttl) {
+                        Bem.effectStack.push({"ttl": ttl, "$emote": $emote});
+                    }
+
+                    //$emote.css('will-change', 'transform');
+                    $emote.css('animation', animations.join(',').replace('!', '-'));
                 }
 
-                $emote.css('animation', animations.join(',').replace('!', '-'));
                 if (needsWrapper) {
                     $emote.parent().css('animation', wrapperAnimations.join(',').replace('!', '-'));
                 }
@@ -483,8 +489,14 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             }
             $emote.css('background-position', position_string);
             if ($emote.is('.canvasapng') == false) {
-                var bgImage = emote['background-image'] || emote['apng_url'];
-                $emote.css('background-image', ['url(', bgImage, ')'].join(''));
+                const bgImage = new Image();
+                bgImage.onload = function(){
+                    $emote.css('background-image', ['url(', bgImage.src, ')'].join(''));
+                    if (Bem.onEmoteLoad) {
+                        Bem.onEmoteLoad();
+                    }
+                };
+                bgImage.src = emote['background-image'] || emote['apng_url'];
             }
             var flags = $emote.attr('flags');
 

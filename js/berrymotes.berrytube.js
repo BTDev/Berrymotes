@@ -275,3 +275,4 @@ Bem.emoteRefresh = function (cache) {
 };
 
 Bem.apngSupported = true;
+Bem.onEmoteLoad = scrollBuffersToBottom;
