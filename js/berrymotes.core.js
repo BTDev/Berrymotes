@@ -435,7 +435,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                         $emote.css('z-index', zindex);
                     }
                     if (Bem.enableVibrate && (flags[i] == 'vibrate' || flags[i] == 'chargin' || flags[i] == 'v')) {
-                        animations.unshift('vibrate 0.05s infinite linear');
+                        animations.unshift((reverse ? '-' : '') + 'vibrate 0.05s infinite linear');
                     }
                     if (Bem.enableInvert && flags[i] == 'invert') {
                         $emote.addClass('bem-invert');
@@ -444,7 +444,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                         $emote.addClass('bem-hue-rotate');
                     }
                     if (Bem.enableBrody && (flags[i] == 'brody')) {
-                        animations.push('brody  1.27659s infinite ease');
+                        animations.push((reverse ? '-' : '') + 'brody 1.27659s infinite ease');
                         var brody_height = 1.01 * ($emote.width() * Math.sin(10 * Math.PI / 180) + $emote.height() * Math.cos(10 * Math.PI / 180));
                         Bem.wrapEmoteHeight($emote, brody_height);
                     }
