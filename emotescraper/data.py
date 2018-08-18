@@ -269,6 +269,8 @@ subreddits = [
     "adagiodazzle",
     "ariablaze",
     "sonatadusk",
+    "bloomjackquisition",
+    "TheBelleTower",
 ]
 
 emote_info = [
