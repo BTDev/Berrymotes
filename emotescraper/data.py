@@ -384,4 +384,5 @@ emote_info = [
     {'name': 'dankmaymays', 'nsfw': True},
     {'name': 'twistboobs', 'nsfw': True},
     {'name': 'tempesthorsepussy', 'nsfw': True},
+    {'name': 'lunahead', 'nsfw': True},
 ]
