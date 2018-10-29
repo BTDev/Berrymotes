@@ -251,10 +251,20 @@ Bem.siteSettings = function (configOps) {
 Bem.settings = {
     get: function (key, callback) {
         var val = localStorage.getItem(key);
+        if (val === 'true') {
+            $('body').addClass('bem-' + key);
+        } else if (val === 'false') {
+            $('body').removeClass('bem-' + key);
+        }
         callback(val);
     },
     set: function (key, val, callback) {
         localStorage.setItem(key, val);
+        if (val === true) {
+            $('body').addClass('bem-' + key);
+        } else if (val === false) {
+            $('body').removeClass('bem-' + key);
+        }
         if (callback) callback();
     }
 };
