@@ -251,21 +251,24 @@ Bem.siteSettings = function (configOps) {
 Bem.settings = {
     get: function (key, callback) {
         var val = localStorage.getItem(key);
-        if (val === 'true') {
+        callback(val);
+        if (Bem[key] === true) {
             $('body').addClass('bem-' + key);
-        } else if (val === 'false') {
+        } else if (Bem[key] === false) {
             $('body').removeClass('bem-' + key);
         }
-        callback(val);
     },
     set: function (key, val, callback) {
         localStorage.setItem(key, val);
-        if (val === true) {
+        if (callback) callback();
+        if (Bem[key] === true) {
             $('body').addClass('bem-' + key);
-        } else if (val === false) {
+        } else if (Bem[key] === false) {
             $('body').removeClass('bem-' + key);
         }
-        if (callback) callback();
+        if (key === 'enabled') {
+            scrollBuffersToBottom();
+        }
     }
 };
 
