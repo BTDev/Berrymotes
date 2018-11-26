@@ -271,6 +271,7 @@ subreddits = [
     "sonatadusk",
     "bloomjackquisition",
     "TheBelleTower",
+    "ironsalsa",
 ]
 
 emote_info = [
