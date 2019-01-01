@@ -1096,40 +1096,45 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
     });
 
     function doWorkerMessage(data) {
-        let state = doWorkerMessage._state;
+        try {
+            let state = doWorkerMessage._state;
 
-        if (!state) {
-            state = doWorkerMessage._state = {
-                worker: new Worker(`${Bem.origin}/js/berrymotes.worker.js`),
-                handlers: {},
-                nextRequestId: 0
-            };
-
-            state.worker.addEventListener("message", ({data}) => {
-                const resultHandler = state.handlers[data.requestId];
-                if (!resultHandler) {
-                    console.error(`No response registered for request ${data.requestId}`);
-                    return;
-                }
-
-                delete state.handlers[data.requestId];
-                resultHandler(data);
-            });
-        }
-
-        return new Promise((resolve, reject) => {
-            const requestId = ++state.nextRequestId;
-            data.requestId = requestId;
-
-            state.handlers[requestId] = 
-                ({result, error}) => {
-                    if (error)
-                        reject(error);
-                    else
-                        resolve(result);
+            if (!state) {
+                state = doWorkerMessage._state = {
+                    worker: new Worker(URL.createObjectURL(new Blob([`importScripts("${Bem.origin}/js/berrymotes.worker.js")`]))),
+                    handlers: {},
+                    nextRequestId: 0
                 };
-    
-            state.worker.postMessage(data);
-        });
+
+                state.worker.addEventListener("message", ({data}) => {
+                    const resultHandler = state.handlers[data.requestId];
+                    if (!resultHandler) {
+                        console.error(`No response registered for request ${data.requestId}`);
+                        return;
+                    }
+
+                    delete state.handlers[data.requestId];
+                    resultHandler(data);
+                });
+            }
+
+            return new Promise((resolve, reject) => {
+                const requestId = ++state.nextRequestId;
+                data.requestId = requestId;
+
+                state.handlers[requestId] = 
+                    ({result, error}) => {
+                        if (error)
+                            reject(error);
+                        else
+                            resolve(result);
+                    };
+        
+                state.worker.postMessage(data);
+            });
+        } catch (e) {
+            console.error(e);
+            return Promise.reject(e);
+        }
     }
 })(Bem.jQuery);
