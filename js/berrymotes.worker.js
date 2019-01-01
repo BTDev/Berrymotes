@@ -27,8 +27,19 @@ self.addEventListener("message", async ({data}) => {
     }
 })
 
+const postprocessCache = {}
+const dataUrlToCacheKey = {}
+
 async function doPostprocess({emote, postprocess: {speed}}) {
-    const response = await fetch(emote["apng_url"] || emote["background-image"])
+    const cacheKey = `emote:${emote.id},speed:${speed}`
+    if (postprocessCache.hasOwnProperty(cacheKey)) {
+        const cached = postprocessCache[cacheKey]
+        cached.refcount++
+        return {dataUrl: cached.dataUrl, didChange: true}
+    }
+    
+    const url = emote["apng_url"] || emote["background-image"]
+    const response = await fetch(url)
 
     if (!response.ok)
         throw new Error(`Bad response: ${response.status}`)
@@ -48,15 +59,43 @@ async function doPostprocess({emote, postprocess: {speed}}) {
 
     if (!didChange)
         return {didChange}
+
+    const dataUrl = URL.createObjectURL(new Blob([buffer]))
     
+    postprocessCache[cacheKey] = {
+        refcount: 1, 
+        dataUrl
+    }    
+
+    dataUrlToCacheKey[dataUrl] = cacheKey
+
     return {
-        dataUrl: URL.createObjectURL(new Blob([buffer])),
+        dataUrl,
         didChange
     }
 }
 
 async function doDisposeEmote({dataUrl}) {
-    URL.revokeObjectURL(dataUrl);
+    if (!dataUrlToCacheKey.hasOwnProperty(dataUrl)) {
+        URL.revokeObjectURL(dataUrl)
+        return
+    }
+
+    const cacheKey = dataUrlToCacheKey[dataUrl]
+    if (!postprocessCache.hasOwnProperty(cacheKey)) {
+        delete dataUrlToCacheKey[dataUrl]
+        URL.revokeObjectURL(dataUrl)
+        return
+    }
+    
+    const cached = postprocessCache[cacheKey]
+    
+    if (cached.refcount == 1) {
+        delete dataUrlToCacheKey[dataUrl]
+        delete postprocessCache[cacheKey]
+        URL.revokeObjectURL(dataUrl)
+    } else
+        cached.refcount--
 }
 
 const apngHeader = [137, 80, 78, 71, 13, 10, 26, 10]

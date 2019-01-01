@@ -1095,18 +1095,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         } else if (Bem.debug) console.log("Load is a negative, going quiet.");
     });
 
-    async function postProcessEmote(emote, postprocess) {
-        worker.postMessage({
-            type: "postprocess",
-            emote,
-            postprocess
-        });
-
-
-        return `url(data:image/png;base64,${base64ArrayBuffer(buffer)})`;
-    }
-
-    async function doWorkerMessage(data) {
+    function doWorkerMessage(data) {
         let state = doWorkerMessage._state;
 
         if (!state) {
