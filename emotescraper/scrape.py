@@ -58,10 +58,6 @@ f.close()
 for i, emote in enumerate(scraper.emotes):
     emote['id'] = i
     try:
-        del emote['apng_url']
-    except KeyError:
-        pass
-    try:
         emote['tags'].remove('')
     except ValueError:
         pass
