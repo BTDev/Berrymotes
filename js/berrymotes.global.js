@@ -46,7 +46,6 @@ Bem.berrySiteInit = function () {
                             walk(node);
                         }
                     }
-
                 } else if (mutations[i].type === "characterData") {
                     Bem.applyEmotesToTextNode(mutations[i].target);
                 }
