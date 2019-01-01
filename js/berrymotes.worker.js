@@ -3,7 +3,37 @@ const messageHandlers = {
     disposeEmote: doDisposeEmote
 }
 
-self.addEventListener("message", async ({data}) => {
+// taken from https://gist.github.com/gre/1650294
+const easingFunctions = {
+    // no easing, no acceleration
+    linear: function (t) { return t },
+    // accelerating from zero velocity
+    easeInQuad: function (t) { return t * t },
+    // decelerating to zero velocity
+    easeOutQuad: function (t) { return t * (2 - t) },
+    // acceleration until halfway, then deceleration
+    easeInOutQuad: function (t) { return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t },
+    // accelerating from zero velocity 
+    easeInCubic: function (t) { return t * t * t },
+    // decelerating to zero velocity 
+    easeOutCubic: function (t) { return (--t) * t * t + 1 },
+    // acceleration until halfway, then deceleration 
+    easeInOutCubic: function (t) { return t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1 },
+    // accelerating from zero velocity 
+    easeInQuart: function (t) { return t * t * t * t },
+    // decelerating to zero velocity 
+    easeOutQuart: function (t) { return 1 - (--t) * t * t * t },
+    // acceleration until halfway, then deceleration
+    easeInOutQuart: function (t) { return t < .5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t },
+    // accelerating from zero velocity
+    easeInQuint: function (t) { return t * t * t * t * t },
+    // decelerating to zero velocity
+    easeOutQuint: function (t) { return 1 + (--t) * t * t * t * t },
+    // acceleration until halfway, then deceleration 
+    easeInOutQuint: function (t) { return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t }
+};
+
+self.addEventListener("message", async ({ data }) => {
     const handler = messageHandlers[data.type]
     try {
         let result
@@ -30,14 +60,14 @@ self.addEventListener("message", async ({data}) => {
 const postprocessCache = {}
 const dataUrlToCacheKey = {}
 
-async function doPostprocess({emote, postprocess: {speed}}) {
-    const cacheKey = `emote:${emote.id},speed:${speed}`
+async function doPostprocess({ emote, postprocess: { speed } }) {
+    const cacheKey = `emote:${emote.id}${speed ? `,speed:${speed.multiplier || "1"}${speed.easing || "linear"}` : ""}`
     if (postprocessCache.hasOwnProperty(cacheKey)) {
         const cached = postprocessCache[cacheKey]
         cached.refcount++
-        return {dataUrl: cached.dataUrl, didChange: true}
+        return { dataUrl: cached.dataUrl, didChange: true }
     }
-    
+
     const url = emote["apng_url"] || emote["background-image"]
     const response = await fetch(url)
 
@@ -58,14 +88,14 @@ async function doPostprocess({emote, postprocess: {speed}}) {
     }
 
     if (!didChange)
-        return {didChange}
+        return { didChange }
 
     const dataUrl = URL.createObjectURL(new Blob([buffer]))
-    
+
     postprocessCache[cacheKey] = {
-        refcount: 1, 
+        refcount: 1,
         dataUrl
-    }    
+    }
 
     dataUrlToCacheKey[dataUrl] = cacheKey
 
@@ -75,7 +105,7 @@ async function doPostprocess({emote, postprocess: {speed}}) {
     }
 }
 
-async function doDisposeEmote({dataUrl}) {
+async function doDisposeEmote({ dataUrl }) {
     if (!dataUrlToCacheKey.hasOwnProperty(dataUrl)) {
         URL.revokeObjectURL(dataUrl)
         return
@@ -87,9 +117,9 @@ async function doDisposeEmote({dataUrl}) {
         URL.revokeObjectURL(dataUrl)
         return
     }
-    
+
     const cached = postprocessCache[cacheKey]
-    
+
     if (cached.refcount == 1) {
         delete dataUrlToCacheKey[dataUrl]
         delete postprocessCache[cacheKey]
@@ -99,29 +129,52 @@ async function doDisposeEmote({dataUrl}) {
 }
 
 const apngHeader = [137, 80, 78, 71, 13, 10, 26, 10]
-function setApngSpeed(buffer, speed) {
-    if (speed == 0)
-        return [false, buffer]
-
-    speed = 1 / speed
+function setApngSpeed(buffer, { multiplier = 1, easing = "linear" }) {
+    multiplier = 1 / multiplier
+    const easingFunction = easingFunctions[easing.toLowerCase()] || easingFunctions.linear
 
     const view = new Uint8Array(buffer)
     const data = new DataView(buffer)
+    let frameCount
+    let frameIndex = 0
 
     for (let i = 0; i < apngHeader.length; i++) {
         if (view[i] != apngHeader[i])
             throw new Error(`Unexpected header near byte ${i}. ${view[i]} != ${apngHeader[i]}`)
     }
 
+    const chunkMap = {
+        acTL: processAnimationControl,
+        fcTL: processFrameControl
+    }
+
     parseChunks(view, (type, _, offset, length) => {
-        if (type != "fcTL")
-            return
+        const handler = chunkMap[type]
+        if (handler)
+            handler(offset, length)
+    })
+
+    return [true, buffer]
+
+    // chunk type: acTL
+    function processAnimationControl(offset, length) {
+        frameCount = readDWord(view, offset + 8)
+    }
+
+    // chunk type: fcTL
+    function processFrameControl(offset, length) {
+        if (!frameCount)
+            throw new Error(`fcTL before acTL?!`)
+
+        frameIndex++
+        const percent = frameIndex / frameCount
+        const speedBoost = multiplier * easingFunction(percent)
 
         // read about this frame here https://wiki.mozilla.org/APNG_Specification#.60fcTL.60:_The_Frame_Control_Chunk
         const delayNumerator = readWord(view, offset + 8 + 20) || 1
         const delayDenomerator = readWord(view, offset + 8 + 22) || 1
 
-        const newDelay = Math.max(11, Math.round((delayNumerator / delayDenomerator) * speed * 1000))
+        const newDelay = Math.max(11, Math.round((delayNumerator / delayDenomerator) * speedBoost * 1000))
         data.setUint16(offset + 8 + 20, newDelay)
         data.setUint16(offset + 8 + 22, 1000)
 
@@ -129,9 +182,7 @@ function setApngSpeed(buffer, speed) {
         // all if any frames have a wrong checksum.
         const newCrc = calculateCrc32(view.slice(offset + 4, offset + 4 + 4 + length))
         data.setUint32(offset + length + 4 + 4, newCrc)
-    })
-
-    return [true, buffer]
+    }
 }
 
 // for performance
@@ -186,20 +237,6 @@ function base64ArrayBuffer(arrayBuffer) {
     }
 
     return base64
-}
-
-function getGreatedCommongDenom(a, b) {
-    return b < 0.0000001
-        ? a
-        : getGreatedCommongDenom(b, Math.floor(a % b))
-}
-
-function convertDecimalToFraction(decimal) {
-    const len = decimal.toString().length - 2
-    const denominator = Math.pow(10, len)
-    const numerator = decimal * denominator
-    const divisor = getGreatedCommongDenom(numerator, denominator)
-    return [numerator / divisor, denominator / divisor]
 }
 
 // the following helper functions are taken from
@@ -264,11 +301,10 @@ function calculateCrc32(data) {
         //     so no need for the reversal function
         for (var i = 256; i--;) {
             var tmp = i;
-    
-            for (var k = 8; k--;) {
+
+            for (var k = 8; k--;)
                 tmp = tmp & 1 ? 3988292384 ^ tmp >>> 1 : tmp >>> 1;
-            }
-    
+
             table[i] = tmp;
         }
 
