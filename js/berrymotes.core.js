@@ -523,18 +523,19 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                         postprocess: postSettings
                     }).then(
                         ({didChange, dataUrl}) => {
-                            if (didChange) {
-                                $emote[0].style.background = `url(${dataUrl})`;
-                                Bem.effectStack.push({ 
-                                    ttl,
-                                    callback() {
-                                        $emote[0].style.background = `url(${noEffectUrl})`;
-                                        doWorkerMessage({type: "disposeEmote", dataUrl});
-                                    } 
-                                });
-                            }
-                            else 
+                            if (!didChange) {
                                 $emote[0].style.background = `url(${noEffectUrl})`;
+                                return;
+                            }
+                            
+                            $emote[0].style.background = `url(${dataUrl})`;
+                            Bem.effectStack.push({ 
+                                ttl: ttl || 10,
+                                callback() {
+                                    $emote[0].style.background = `url(${noEffectUrl})`;
+                                    doWorkerMessage({type: "disposeEmote", dataUrl});
+                                } 
+                            });
                         },
                         (error) => {
                             console.error(`Could not do post-processing for emote ${emote.names.join(", ")}!`);
