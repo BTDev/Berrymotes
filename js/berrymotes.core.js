@@ -66,7 +66,6 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         });
     };
 
-
     Bem.effectStack = [];
     Bem.emoteRegex = /\[([^\]]*)\]\(\/([\w:!#\/]+)([-\w!]*)([^)]*)\)/gi;
     Bem.emRegex = /\*([^\]\*]+)\*/gi;
@@ -76,12 +75,25 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
     Bem.spinAnimations = ['spin', 'zspin', 'xspin', 'yspin', '!spin', '!zspin', '!xspin', '!yspin'];
     Bem.animationSpeeds = ['slowest', 'slower', 'slow', 'fast', 'faster', 'fastest'];
     Bem.animationSpeedMap = {
-        'slowest': '14s',
-        'slower': '12s',
-        'slow': '10s',
-        'fast': '6s',
-        'faster': '4s',
-        'fastest': '2s'
+        slowest: '14s',
+        slower: '12s',
+        slow: '10s',
+        fast: '6s',
+        faster: '4s',
+        fastest: '2s'
+    };
+
+    Bem.apngSpeedMap = {
+        "6xslow": .16,
+        "5xslow": .20,
+        "4xslow": .25,
+        "3xslow": .33,
+        "2xslow": .5,
+        "2xfast": 2,
+        "3xfast": 3,
+        "4xfast": 4,
+        "5xfast": 5,
+        "6xfast": 6
     };
 
     Bem.tagRegexes = {
@@ -195,10 +207,10 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                     if (Bem.isEmoteEligible(emote)) {
                         var innerText = Bem.formatInnerText(match[1]);
                         emoteLocations.push({
-                                start: match.index,
-                                replace_length: match[0].length,
-                                emote_html: Bem.getEmoteHtml(emote, match[3], innerText, match[4])
-                            }
+                            start: match.index,
+                            replace_length: match[0].length,
+                            emote_html: Bem.getEmoteHtml(emote, match[3], innerText, match[4])
+                        }
                         );
                     }
                 }
@@ -220,7 +232,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         var emoteHtml = ['<span class="berryemote',
             emote.height > Bem.maxEmoteHeight ? ' resize' : '',
             Bem.apngSupported == false && emote.apng_url ? ' canvasapng' : '',
-            Bem.onlyHover == true || ( emote.nsfw && Bem.onlyHoverNSFW ) ? ' berryemote_hover' : '',
+            Bem.onlyHover == true || (emote.nsfw && Bem.onlyHoverNSFW) ? ' berryemote_hover' : '',
             '" ',
             'style="',
             'height:', emote.height, 'px; ',
@@ -228,7 +240,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             'display:inline-block; ',
             'position: relative; overflow: hidden;', '" ',
             'flags="', flags, '" ',
-            'emote_id="', emote.id , '">', innerText || "" , '</span>'
+            'emote_id="', emote.id, '">', innerText || "", '</span>'
 
         ];
         if (altText) {
@@ -244,7 +256,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                 eligible = false;
             }
             // allow subreddit blacklisting
-            if ('/r/'+emote.sr == $.trim(Bem.blacklist[j])) {
+            if ('/r/' + emote.sr == $.trim(Bem.blacklist[j])) {
                 eligible = false;
             }
         }
@@ -271,7 +283,8 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             'height': Math.ceil(height - offset),
             'display': 'inline-block',
             'margin-top': offset,
-            'position': 'relative'});
+            'position': 'relative'
+        });
     };
 
     Bem.postEmoteEffects = function (message, isSearch, ttl, username) {
@@ -339,6 +352,12 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         }
 
         var emotes = message.find('.berryemote');
+
+        const emotePostprocess = new Array(emotes.length);
+        
+        for (let i = 0; i < emotes.length; i++)
+            emotePostprocess[i] = {};
+
         if (!isSearch && Bem.effects) {
             $.each(emotes, function (index, emoteDom) {
                 var $emote = $(emoteDom);
@@ -356,25 +375,31 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                 var spin;
                 var brody;
                 var needsWrapper;
+                const postprocess = emotePostprocess[index];
+
                 for (var i = 0; i < flags.length; ++i) {
-                    if (Bem.animationSpeeds.indexOf(flags[i]) > -1 || flags[i].match(/^s\d/)) {
+                    if (Bem.animationSpeeds.indexOf(flags[i]) > -1 || flags[i].match(/^s\d/))
                         speed = flags[i];
-                    }
-                    if (flags[i] == 'r') {
+
+                    if (flags[i] == 'r')
                         reverse = true;
-                    }
-                    if (Bem.spinAnimations.indexOf(flags[i]) != -1) {
+
+                    if (Bem.spinAnimations.indexOf(flags[i]) != -1)
                         spin = true;
-                    }
-                    if (flags[i] == 'brody') {
+
+                    if (flags[i] == 'brody')
                         brody = true;
-                    }
+
                     if ((Bem.enableSpin && (flags[i] == 'spin' || flags[i] == 'zspin')) ||
                         (Bem.enableRotate && flags[i].match(/^\d+$/)) ||
-                        (Bem.enableBrody && flags[i] == 'brody')) {
+                        (Bem.enableBrody && flags[i] == 'brody'))
                         needsWrapper = true;
-                    }
+
+                    const apngSpeed = Bem.apngSpeedMap[flags[i]]
+                    if (apngSpeed)
+                        postprocess.speed = apngSpeed;
                 }
+
                 for (var i = 0; i < flags.length; ++i) {
                     if (Bem.enableSpin && Bem.spinAnimations.indexOf(flags[i]) != -1) {
                         animations.push(flags[i] + ' 2s infinite linear');
@@ -451,21 +476,20 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                 }
 
                 if (animations.length > 0) {
-                    if (ttl) {
-                        Bem.effectStack.push({"ttl": ttl, "$emote": $emote});
-                    }
+                    if (ttl)
+                        Bem.effectStack.push({ "ttl": ttl, "$emote": $emote });
 
-                    //$emote.css('will-change', 'transform');
                     $emote.css('animation', animations.join(',').replace('!', '-'));
                 }
 
-                if (needsWrapper) {
+                if (needsWrapper)
                     $emote.parent().css('animation', wrapperAnimations.join(',').replace('!', '-'));
-                }
-                if (Bem.enableReverse && reverse) transforms.push('scaleX(-1)');
-                if (transforms.length > 0) {
+
+                if (Bem.enableReverse && reverse)
+                    transforms.push('scaleX(-1)');
+
+                if (transforms.length > 0)
                     $emote.css('transform', transforms.join(' '));
-                }
             });
         }
         $.each(emotes, function (index, emoteDom) {
@@ -489,39 +513,71 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             }
             $emote.css('background-position', position_string);
             if ($emote.is('.canvasapng') == false) {
-                const bgImage = new Image();
-                bgImage.onload = function(){
-                    $emote.css('background-image', ['url(', bgImage.src, ')'].join(''));
-                    if (Bem.onEmoteLoad) {
-                        Bem.onEmoteLoad();
-                    }
-                };
-                bgImage.src = emote['background-image'] || emote['apng_url'];
+                const postSettings = emotePostprocess[index];
+                const noEffectUrl = emote['background-image'] || emote['apng_url'];
+
+                if (Object.keys(postSettings).length) {
+                    doWorkerMessage({
+                        type: "postprocess", 
+                        emote,
+                        postprocess: postSettings
+                    }).then(
+                        ({didChange, dataUrl}) => {
+                            if (!didChange) {
+                                $emote[0].style.background = `url(${noEffectUrl})`;
+                                return;
+                            }
+                            
+                            $emote[0].style.background = `url(${dataUrl})`;
+                            Bem.effectStack.push({ 
+                                ttl: ttl || 10,
+                                callback() {
+                                    $emote[0].style.background = `url(${noEffectUrl})`;
+                                    doWorkerMessage({type: "disposeEmote", dataUrl});
+                                } 
+                            });
+                        },
+                        (error) => {
+                            console.error(`Could not do post-processing for emote ${emote.names.join(", ")}!`);
+                            console.error(error);
+                            $emote[0].style.background = `url(${noEffectUrl})`;
+                        }
+                    );
+                } else {
+                    const bgImage = new Image();
+                    bgImage.onload = function () {
+                        $emote.css('background-image', ['url(', bgImage.src, ')'].join(''));
+                        if (Bem.onEmoteLoad) {
+                            Bem.onEmoteLoad();
+                        }
+                    };
+                    bgImage.src = noEffectUrl;
+                }
             }
             var flags = $emote.attr('flags');
 
             $emote.attr('title', [emote.names,
                 ' from /r/',
-                emote.sr,
-                flags ? ' effects: ' + flags : ''].join(''));
+            emote.sr,
+            flags ? ' effects: ' + flags : ''].join(''));
 
             if (emote['hover-background-position'] || emote['hover-background-image']) {
                 $emote.hover(function () {
-                        var $this = $(this);
-                        var positionString = (emote['hover-background-position'] || ['0px', '0px']).join(' ');
-                        var width = emote['hover-width'];
-                        var height = emote['hover-height'];
-                        $this.css('background-position', positionString);
-                        if (emote['hover-background-image']) {
-                            $this.css('background-image', ['url(', emote['hover-background-image'], ')'].join(''));
-                        }
-                        if (width) {
-                            $this.css('width', width);
-                        }
-                        if (height) {
-                            $this.css('height', height);
-                        }
-                    },
+                    var $this = $(this);
+                    var positionString = (emote['hover-background-position'] || ['0px', '0px']).join(' ');
+                    var width = emote['hover-width'];
+                    var height = emote['hover-height'];
+                    $this.css('background-position', positionString);
+                    if (emote['hover-background-image']) {
+                        $this.css('background-image', ['url(', emote['hover-background-image'], ')'].join(''));
+                    }
+                    if (width) {
+                        $this.css('width', width);
+                    }
+                    if (height) {
+                        $this.css('height', height);
+                    }
+                },
                     function () {
                         var $this = $(this);
                         var position_string = (emote['background-position'] || ['0px', '0px']).join(' ');
@@ -755,15 +811,15 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                     if (bit.match(srRegex)) {
                         var trim = bit.match(srRegex)[0].length;
                         if (bit[0] == '-' || bit[0] == '+') {
-                            srs.push({match: bit[0] != '-', sdr: sdrify(bit.substring(trim))});
+                            srs.push({ match: bit[0] != '-', sdr: sdrify(bit.substring(trim)) });
                         } else {
-                            srs.push({match: true, sdr: sdrify(bit.substring(trim))});
+                            srs.push({ match: true, sdr: sdrify(bit.substring(trim)) });
                         }
                     } else if (bit.match(tagRegex)) {
                         var trim = bit.match(tagRegex)[0].length;
                         var tag = bit.substring(trim);
                         var tagRegex = tag in Bem.tagRegexes ? sdrify(Bem.tagRegexes[tag]) : sdrify(tag);
-                        tags.push({match: bit[0] != '-', sdr: tagRegex});
+                        tags.push({ match: bit[0] != '-', sdr: tagRegex });
                     } else {
                         terms.push({
                             any: new RegExp(bit, 'i'),
@@ -1040,4 +1096,46 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         } else if (Bem.debug) console.log("Load is a negative, going quiet.");
     });
 
+    function doWorkerMessage(data) {
+        try {
+            let state = doWorkerMessage._state;
+
+            if (!state) {
+                state = doWorkerMessage._state = {
+                    worker: new Worker(URL.createObjectURL(new Blob([`importScripts("${Bem.origin}/js/berrymotes.worker.js")`]))),
+                    handlers: {},
+                    nextRequestId: 0
+                };
+
+                state.worker.addEventListener("message", ({data}) => {
+                    const resultHandler = state.handlers[data.requestId];
+                    if (!resultHandler) {
+                        console.error(`No response registered for request ${data.requestId}`);
+                        return;
+                    }
+
+                    delete state.handlers[data.requestId];
+                    resultHandler(data);
+                });
+            }
+
+            return new Promise((resolve, reject) => {
+                const requestId = ++state.nextRequestId;
+                data.requestId = requestId;
+
+                state.handlers[requestId] = 
+                    ({result, error}) => {
+                        if (error)
+                            reject(error);
+                        else
+                            resolve(result);
+                    };
+        
+                state.worker.postMessage(data);
+            });
+        } catch (e) {
+            console.error(e);
+            return Promise.reject(e);
+        }
+    }
 })(Bem.jQuery);

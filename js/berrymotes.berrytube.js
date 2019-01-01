@@ -118,7 +118,11 @@ Bem.monkeyPatchChat = function () {
                 return true; // keep the element in the array
             }
             else {
-                effectEmote["$emote"].css("animation", "none");
+                if (effectEmote.hasOwnProperty("$emote"))
+                    effectEmote["$emote"].css("animation", "none");
+                else if (effectEmote.hasOwnProperty("callback"))
+                    effectEmote["callback"]();
+                    
                 return false;
             }
         });
