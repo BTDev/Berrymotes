@@ -21,7 +21,7 @@ self.addEventListener("message", async ({data}) => {
     } catch (e) {
         self.postMessage({
             type: data.type,
-            error: e,
+            error: e.stack || "fatal error",
             requestId: data.requestId
         })
     }
