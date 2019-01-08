@@ -82,7 +82,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         faster: '4s',
         fastest: '2s'
     };
-    
+
     Bem.apngSpeedMap = {
         "6xslow": .16,
         "5xslow": .20,
@@ -95,24 +95,6 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         "5xfast": 5,
         "6xfast": 6
     };
-    
-    Bem.apngEaseMap = {
-        linear: "linear",
-        easein: "easeInQuad",
-        easeout: "easeOutQuad",
-        ease: "easeInOutQuad",
-        easein3: "easeInCubic",
-        easeout3: "easeOutCubic",
-        ease3: "easeInOutCubic",
-        easein4: "easeInQuart",
-        easeout4: "easeOutQuart",
-        ease4: "easeInOutQuart",
-        easein5: "easeInQuint",
-        easeout5: "easeOutQuint",
-        ease5: "easeInOutQuint",
-    };
-
-    Bem.apngSpeedRegex = /([1-6])x(fast|slow)(x(\w+))?/i
 
     Bem.tagRegexes = {
         'fs': 'fluttershy',
@@ -413,19 +395,9 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                         (Bem.enableBrody && flags[i] == 'brody'))
                         needsWrapper = true;
 
-                    const apngMultiplier = Bem.apngSpeedMap[flags[i]]
-                    if (apngMultiplier) {
-                        postprocess.speed = postprocess.speed || {}
-                        postprocess.speed.multiplier = apngMultiplier
-                        continue;
-                    }
-
-                    const apngEasingFunction = Bem.apngEaseMap[flags[i]]
-                    if (apngEasingFunction) {
-                        postprocess.speed = postprocess.speed || {}
-                        postprocess.speed.easing = apngEasingFunction
-                        continue;
-                    }
+                    const apngSpeed = Bem.apngSpeedMap[flags[i]]
+                    if (apngSpeed)
+                        postprocess.speed = apngSpeed;
                 }
 
                 for (var i = 0; i < flags.length; ++i) {
