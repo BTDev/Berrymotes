@@ -221,6 +221,7 @@ subreddits = [
     "rubypinch",
     "ryumotes",
     "SaphkeyEmoteSub",
+    "SaphkeyEmoteSub2",
     "sapphirestone",
     "sassymotes",
     "scratchquisition",
