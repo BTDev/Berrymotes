@@ -354,7 +354,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
         var emotes = message.find('.berryemote');
 
         const emotePostprocess = new Array(emotes.length);
-        
+
         for (let i = 0; i < emotes.length; i++)
             emotePostprocess[i] = {};
 
@@ -518,29 +518,31 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
 
                 if (Object.keys(postSettings).length) {
                     doWorkerMessage({
-                        type: "postprocess", 
+                        type: "postprocess",
                         emote,
                         postprocess: postSettings
                     }).then(
-                        ({didChange, dataUrl}) => {
+                        ({ didChange, dataUrl }) => {
                             if (!didChange) {
-                                $emote[0].style.background = `url(${noEffectUrl})`;
+                                $emote[0].style.backgroundImage = `url(${noEffectUrl})`;
                                 return;
                             }
-                            
-                            $emote[0].style.background = `url(${dataUrl})`;
-                            Bem.effectStack.push({ 
+
+                            $emote.data("postprocessed-url", dataUrl)
+                            $emote[0].style.backgroundImage = `url(${dataUrl})`;
+                            Bem.effectStack.push({
                                 ttl: ttl || 10,
                                 callback() {
-                                    $emote[0].style.background = `url(${noEffectUrl})`;
-                                    doWorkerMessage({type: "disposeEmote", dataUrl});
-                                } 
+                                    $emote[0].style.backgroundImage = `url(${noEffectUrl})`;
+                                    $emote.data("postprocessed-url", "")
+                                    doWorkerMessage({ type: "disposeEmote", dataUrl });
+                                }
                             });
                         },
                         (error) => {
                             console.error(`Could not do post-processing for emote ${emote.names.join(", ")}!`);
                             console.error(error);
-                            $emote[0].style.background = `url(${noEffectUrl})`;
+                            $emote[0].style.backgroundImage = `url(${noEffectUrl})`;
                         }
                     );
                 } else {
@@ -580,11 +582,12 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                 },
                     function () {
                         var $this = $(this);
+                        const postprocessedUrl = $this.data("postprocessed-url")
                         var position_string = (emote['background-position'] || ['0px', '0px']).join(' ');
                         var width = emote['width'];
                         var height = emote['height'];
                         $this.css('background-position', position_string);
-                        $this.css('background-image', ['url(', emote['background-image'], ')'].join(''));
+                        $this.css('background-image', ['url(', postprocessedUrl || emote['background-image'], ')'].join(''));
                         if (width) {
                             $this.css('width', width);
                         }
@@ -1107,7 +1110,7 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                     nextRequestId: 0
                 };
 
-                state.worker.addEventListener("message", ({data}) => {
+                state.worker.addEventListener("message", ({ data }) => {
                     const resultHandler = state.handlers[data.requestId];
                     if (!resultHandler) {
                         console.error(`No response registered for request ${data.requestId}`);
@@ -1123,14 +1126,14 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
                 const requestId = ++state.nextRequestId;
                 data.requestId = requestId;
 
-                state.handlers[requestId] = 
-                    ({result, error}) => {
+                state.handlers[requestId] =
+                    ({ result, error }) => {
                         if (error)
                             reject(error);
                         else
                             resolve(result);
                     };
-        
+
                 state.worker.postMessage(data);
             });
         } catch (e) {
