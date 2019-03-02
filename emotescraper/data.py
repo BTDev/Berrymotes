@@ -76,6 +76,7 @@ subreddits = [
     "clopclop",
     "clopmotes",
     "cloudchasermotes",
+    "codex_of_wisdom",
     "coloratura",
     "commabombing",
     "coolleg",
