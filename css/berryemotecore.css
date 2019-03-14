@@ -68,10 +68,6 @@
     margin: 5px 0px;
 }
 
-.berryemote {
-    background-repeat: no-repeat;
-}
-
 .berryemote_hover>span {
     display: none !important;
 }
