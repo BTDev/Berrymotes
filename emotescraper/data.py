@@ -238,6 +238,7 @@ subreddits = [
     "speedingturtle",
     "spitquisition",
     "stalliongrad",
+    "StarfflameEmotes",
     "starlightglimmer",
     "SteamBerryEmotes",
     "sunsetshimmer",
