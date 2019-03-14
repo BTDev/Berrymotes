@@ -55,14 +55,5 @@ f = open(os.path.join('..', 'data', 'berrymotes_json_data.json'), 'wb')
 f.write(dumps(scraper.emotes, separators=(',', ':')))
 f.close()
 
-for i, emote in enumerate(scraper.emotes):
-    emote['id'] = i
-    try:
-        emote['tags'].remove('')
-    except ValueError:
-        pass
-    emote['tags'].sort()
-
-f = open(os.path.join('..', 'data', 'berrymotes_json_data.v2.json'), 'wb')
-f.write(dumps(scraper.emotes, separators=(',', ':')))
-f.close()
+import make_v2
+make_v2.from_data(scraper.emotes)
