@@ -1104,8 +1104,9 @@ Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
             let state = doWorkerMessage._state;
 
             if (!state) {
+                const workerURL = Bem.worker_url || `${Bem.origin}/js/berrymotes.worker.js`;
                 state = doWorkerMessage._state = {
-                    worker: new Worker(URL.createObjectURL(new Blob([`importScripts("${Bem.origin}/js/berrymotes.worker.js")`]))),
+                    worker: new Worker(URL.createObjectURL(new Blob([`importScripts("${workerURL}")`]))),
                     handlers: {},
                     nextRequestId: 0
                 };
