@@ -320,6 +320,7 @@ subreddits = [
     "troubleshoes",
     "twistarlight",
     "zephyrbreeze",
+    "nlaqemotes",
 ]
 
 emote_info = [
