@@ -262,6 +262,7 @@ subreddits = [
     "themirishponies",
     "tiltemotes",
     "TSpudsWrestlingEmotes",
+    "TSpudWrestleBunker",
     "twidashmotes",
     "twilightsparkle",
     "twiquisition",
