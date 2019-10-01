@@ -146,6 +146,7 @@ subreddits = [
     "mylittleaprilfools",
     "mylittleayrl",
     "mylittlebannertest",
+    "mylittlebeans",
     "mylittlecelestias",
     "mylittlechaos",
     "mylittlecirclejerk",
