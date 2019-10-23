@@ -234,7 +234,7 @@ subreddits = [
     "shadeschatlounge",
     "shipgirlemotes",
     "shittyemotes",
-    "smidqemotes"
+    "smidqemotes",
     "snakemote",
     "snakemote2",
     "spaceclop",
