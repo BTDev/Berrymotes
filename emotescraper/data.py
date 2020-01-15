@@ -111,6 +111,7 @@ subreddits = [
     "isthisananimoteyet",
     "isthisanemoteyet",
     "jacksanimotes",
+    "K3sEmoteSub",
     "kalymotes",
     "kalymotes2",
     "kimberlybt",
