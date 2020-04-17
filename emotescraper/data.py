@@ -314,6 +314,7 @@ subreddits = [
     "sgap",
     "shymotes",
     "sillynumptie",
+    "SmithersPonymotes",
     "sombra",
     "somnambula",
     "sugarbelle",
