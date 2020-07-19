@@ -10,13 +10,14 @@ def from_data(emotes):
         except ValueError:
             pass
         emote['tags'].sort()
-
-    with open(os.path.join('..', 'data', 'berrymotes_json_data.v2.json'), 'wb') as fh:
-        fh.write(json.dumps(emotes, separators=(',', ':')))
+	return emotes
 
 def from_file(fname):
     with open(fname, 'rb') as fh:
-        from_data(json.load(fh))
+        return from_data(json.load(fh))
 
 if __name__ == '__main__':
-    from_file(os.path.join('..', 'data', 'berrymotes_json_data.json'))
+    data = from_file(os.path.join('..', 'data', 'berrymotes_json_data.json'))
+	
+    with open(os.path.join('..', 'data', 'berrymotes_json_data.v2.json'), 'wb') as fh:
+        fh.write(json.dumps(data, separators=(',', ':')))
