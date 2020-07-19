@@ -20,14 +20,15 @@ import gzip
 from bmscraper.ratelimiter import TokenBucket
 import make_v2
 
-try:
-	import brotli
-except ImportError:
-	brotli = None
-
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 from bmscraper import BMScraper, UserscriptEmotesProcessorFactory
+
+try:
+	import brotli
+except ImportError:
+	logger.warn('Brotli is not available')
+	brotli = None
 
 from data import *
 from json import dumps

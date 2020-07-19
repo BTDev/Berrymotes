@@ -12,7 +12,7 @@ Bem = typeof Bem === "undefined" ? {} : Bem;
 Bem.jQuery = jQuery;
 Bem.community = "bt";
 Bem.origin = Bem.origin || 'https://berrytube.tv/berrymotes';
-Bem.cdn_origin = Bem.cdn_origin || 'https://cdn.berrytube.tv/berrymotes';
+Bem.cdn_origin = Bem.cdn_origin || Bem.origin;
 
 var berrytube_settings_schema = [
     { key: 'drunkMode', type: "bool", default: false },
