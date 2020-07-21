@@ -10,7 +10,7 @@ def from_data(emotes):
         except ValueError:
             pass
         emote['tags'].sort()
-	return emotes
+    return emotes
 
 def from_file(fname):
     with open(fname, 'rb') as fh:
@@ -18,6 +18,6 @@ def from_file(fname):
 
 if __name__ == '__main__':
     data = from_file(os.path.join('..', 'data', 'berrymotes_json_data.json'))
-	
+
     with open(os.path.join('..', 'data', 'berrymotes_json_data.v2.json'), 'wb') as fh:
         fh.write(json.dumps(data, separators=(',', ':')))

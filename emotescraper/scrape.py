@@ -25,10 +25,10 @@ logger = logging.getLogger(__name__)
 from bmscraper import BMScraper, UserscriptEmotesProcessorFactory
 
 try:
-	import brotli
+    import brotli
 except ImportError:
-	logger.warn('Brotli is not available')
-	brotli = None
+    logger.warn('Brotli is not available')
+    brotli = None
 
 from data import *
 from json import dumps
@@ -55,31 +55,31 @@ scraper.scrape()
 logger.info("Finished scrape in {}.".format(time.time() - start))
 
 def output(basename, data):
-	with open(basename, 'wb') as fh:
-		fh.write(data)
+    with open(basename, 'wb') as fh:
+        fh.write(data)
 
-	fname = basename + '.gz'
-	try:
-		with gzip.open(fname, 'wb') as fh:
-			fh.write(data)
-	except:
-		logger.exception('Unable to gzip emote data')
-		try:
-			os.unlink(fname)
-		except FileNotFoundError:
-			pass
+    fname = basename + '.gz'
+    try:
+        with gzip.open(fname, 'wb') as fh:
+            fh.write(data)
+    except:
+        logger.exception('Unable to gzip emote data')
+        try:
+            os.unlink(fname)
+        except FileNotFoundError:
+            pass
 
-	if brotli:
-		fname = basename + '.br'
-		try:
-			with open(fname, 'wb') as fh:
-				fh.write(brotli.compress(data, brotli.MODE_TEXT))
-		except:
-			logger.exception('Unable to brotli emote data')
-			try:
-				os.unlink(fname)
-			except FileNotFoundError:
-				pass
+    if brotli:
+        fname = basename + '.br'
+        try:
+            with open(fname, 'wb') as fh:
+                fh.write(brotli.compress(data, brotli.MODE_TEXT))
+        except:
+            logger.exception('Unable to brotli emote data')
+            try:
+                os.unlink(fname)
+            except FileNotFoundError:
+                pass
 
 json = dumps(scraper.emotes, separators=(',', ':'))
 
