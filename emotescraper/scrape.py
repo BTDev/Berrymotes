@@ -85,4 +85,4 @@ json = dumps(scraper.emotes, separators=(',', ':'))
 
 output(os.path.join('..', 'data', 'berrymotes_data.js'), ''.join(["var berryEmotes=", json, ";"]))
 output(os.path.join('..', 'data', 'berrymotes_json_data.json'), json)
-output(os.path.join('..', 'data', 'berrymotes_json_data.v2.json'), make_v2.from_data(scraper.emotes))
+output(os.path.join('..', 'data', 'berrymotes_json_data.v2.json'), dumps(make_v2.from_data(scraper.emotes), separators=(',', ':')))
