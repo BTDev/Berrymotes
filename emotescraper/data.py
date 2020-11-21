@@ -2,7 +2,8 @@ nsfw_subreddits = [
     # Subreddits which when scraped will automatically have any emotes tagged as nsfw.
     "mylittlensfw",
     "clopmotes",
-    "BTMoonlitNSFW"
+    "BTMoonlitNSFW",
+    "NSFWBanana",
 ]
 
 image_blacklist = [
@@ -326,6 +327,7 @@ subreddits = [
     "twistarlight",
     "zephyrbreeze",
     "nlaqemotes",
+    "NSFWBanana",
 ]
 
 emote_info = [
