@@ -150,7 +150,7 @@ Bem.monkeyPatchPoll = function () {
             $.each(options, function (i, option) {
                 var $option = $(option);
                 if (Bem.debug) console.log(option);
-                var t = $option.text().replace(">", "&gt;").replace("<", "&lt;");
+                var t = $option.text().replace(/>/g, "&gt;").replace(/</g, "&lt;");
                 t = t.replace(/\\\\([\w-]+)/i, '[](/$1)');
                 t = Bem.applyEmotesToStr(t);
                 $option.html(t);

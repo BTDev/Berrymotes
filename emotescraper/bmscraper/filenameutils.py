@@ -17,7 +17,7 @@ import os
 
 class FileNameUtils(object):
     def get_folder_name(self, image_url):
-        re_folder = re.compile('(.)\.thumbs.redditmedia.com')
+        re_folder = re.compile(r'(.)\.thumbs\.redditmedia\.com')
         folder_name = re_folder.search(image_url)
         if not folder_name:
             return 't'
