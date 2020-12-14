@@ -3,3 +3,4 @@ python-dateutil
 workerpool
 tinycss
 Pillow<2.0
+requests
