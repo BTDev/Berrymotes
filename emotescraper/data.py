@@ -87,6 +87,7 @@ subreddits = [
     "daxterionfanclub",
     "daylightemotes",
     "deltasdraws",
+    "deltasdrawsmore",
     "desktopponies",
     "dumbrock",
     "dumbtoxin",
