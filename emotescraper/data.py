@@ -329,7 +329,6 @@ subreddits = [
     "zephyrbreeze",
     "nlaqemotes",
     "NSFWBanana",
-    "savethebtmotes",
     "savethebtmotes2",
 ]
 
