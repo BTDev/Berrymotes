@@ -331,6 +331,7 @@ subreddits = [
     "NSFWBanana",
     "savethebtmotes2",
     "squalomotes",
+    "nobananashere",
 ]
 
 emote_info = [
