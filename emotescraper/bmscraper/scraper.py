@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 class BMScraper(FileNameUtils):
     def __init__(self, processor_factory):
         self.subreddits = []
+        self.legacy_subreddits = {}
         self.user = None
         self.password = None
         self.emotes = []
@@ -75,12 +76,17 @@ class BMScraper(FileNameUtils):
             os.makedirs(self.cache_dir)
 
         for subreddit in self.subreddits:
-            workpool.put(DownloadJob(self._requests,
-                                     'https://old.reddit.com/r/{}/stylesheet'.format(subreddit),
-                                     retry=5,
-                                     rate_limit_lock=self.rate_limit_lock,
-                                     callback=self._callback_fetch_stylesheet,
-                                     **{'subreddit': subreddit}))
+            if subreddit in self.legacy_subreddits:
+                self._process_stylesheet_response(200,
+                                                  self.legacy_subreddits[subreddit],
+                                                  subreddit)
+            else:
+                workpool.put(DownloadJob(self._requests,
+                                         'https://old.reddit.com/r/{}/stylesheet'.format(subreddit),
+                                         retry=5,
+                                         rate_limit_lock=self.rate_limit_lock,
+                                         callback=self._callback_fetch_stylesheet,
+                                         **{'subreddit': subreddit}))
 
         workpool.shutdown()
         workpool.join()
@@ -190,6 +196,17 @@ class BMScraper(FileNameUtils):
             logger.error("Subreddit not set")
             return
 
+        if not response:
+            logger.error("Failed to fetch css for {}".format(subreddit))
+            return
+
+        self._process_stylesheet_response(response.status_code, response.text, subreddit)
+
+    def _process_stylesheet_response(self, status_code, text, subreddit=None):
+        if not subreddit:
+            logger.error("Subreddit not set")
+            return
+
         css = ''
 
         css_path = os.path.sep.join([self.cache_dir, subreddit + '.css'])
@@ -197,13 +214,10 @@ class BMScraper(FileNameUtils):
             with open(css_path) as css_file:
                 css = css_file.read().decode('utf8')
 
-        if not response:
-            logger.error("Failed to fetch css for {}".format(subreddit))
-
-        if response.status_code != 200:
-            logger.error("Failed to fetch css for {} (Status {})".format(subreddit, response.status_code))
+        if status_code != 200:
+            logger.error("Failed to fetch css for {} (Status {})".format(subreddit, status_code))
         else:
-            css = response.text
+            css = text
             with open(css_path, 'w') as css_file:
                 css_file.write(css.encode('utf8'))
 

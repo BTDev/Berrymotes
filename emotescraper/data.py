@@ -39,7 +39,6 @@ subreddits = [
     "abunchofemotes",
     "abunchmoreemotes",
     "abunchmoreofemotes",
-    "ademotes",
     "adery",
     "aderytunes",
     "adviceponies",

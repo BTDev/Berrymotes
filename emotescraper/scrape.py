@@ -31,6 +31,7 @@ except ImportError:
     brotli = None
 
 from data import *
+from legacydata import *
 from json import dumps
 import os
 
@@ -44,6 +45,7 @@ scraper = BMScraper(factory)
 scraper.user = os.environ['REDDIT_USERNAME']
 scraper.password = os.environ['REDDIT_PASSWORD']
 scraper.subreddits = subreddits
+scraper.legacy_subreddits = legacy_subreddits
 scraper.image_blacklist = image_blacklist
 scraper.nsfw_subreddits = nsfw_subreddits
 scraper.emote_info = emote_info
