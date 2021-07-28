@@ -140,7 +140,7 @@ subreddits = [
     "mlpvectors",
     "molestia",
     "mortdoesreddit",
-    "multihoofdrinking",
+    "multihoofdrinking2",
     "mylittleadventuretime",
     "mylittlealcoholic",
     "mylittleandysonic1",
