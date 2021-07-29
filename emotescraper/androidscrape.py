@@ -17,7 +17,6 @@ logger = logging.basicConfig(level=logging.WARN)
 from bmscraper import BMScraper, AndroidEmotesProcessorFactory
 from bmscraper.ratelimiter import TokenBucket
 from data import *
-from legacydata import *
 from json import dumps
 import os
 import gzip

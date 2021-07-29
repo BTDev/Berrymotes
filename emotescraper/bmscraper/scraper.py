@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 class BMScraper(FileNameUtils):
     def __init__(self, processor_factory):
         self.subreddits = []
-        self.legacy_subreddits = {}
+        self.legacy_subreddits = []
         self.user = None
         self.password = None
         self.emotes = []
@@ -77,9 +77,15 @@ class BMScraper(FileNameUtils):
 
         for subreddit in self.subreddits:
             if subreddit in self.legacy_subreddits:
-                self._process_stylesheet_response(200,
-                                                  self.legacy_subreddits[subreddit],
-                                                  subreddit)
+                legacy_file = '{}/../legacy_css/{}.css'.format(os.path.dirname(__file__), subreddit)
+                if os.path.exists(legacy_file):
+                    with open(legacy_file) as fh:
+                        css = fh.read()
+                        self._process_stylesheet_response(200,
+                                                          css,
+                                                          subreddit)
+                else:
+                    logger.error("No css file found for legacy subreddit {}".format(subreddit))
             else:
                 workpool.put(DownloadJob(self._requests,
                                          'https://old.reddit.com/r/{}/stylesheet'.format(subreddit),
@@ -217,6 +223,7 @@ class BMScraper(FileNameUtils):
         if status_code != 200:
             logger.error("Failed to fetch css for {} (Status {})".format(subreddit, status_code))
         else:
+            logger.debug('Found css for {}'.format(subreddit))
             css = text
             with open(css_path, 'w') as css_file:
                 css_file.write(css.encode('utf8'))

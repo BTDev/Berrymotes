@@ -31,7 +31,6 @@ except ImportError:
     brotli = None
 
 from data import *
-from legacydata import *
 from json import dumps
 import os
 
