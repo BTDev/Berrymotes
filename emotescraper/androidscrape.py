@@ -26,6 +26,7 @@ scraper = BMScraper(factory)
 scraper.user = os.environ['REDDIT_USERNAME']
 scraper.password = os.environ['REDDIT_PASSWORD']
 scraper.subreddits = subreddits
+scraper.legacy_subreddits = legacy_subreddits
 scraper.image_blacklist = image_blacklist_android
 scraper.nsfw_subreddits = nsfw_subreddits
 scraper.emote_info = emote_info
