@@ -42,6 +42,7 @@ legacy_subreddits = [
     "colgateinquisition",
     "comicsquisition",
     "cuttershy",
+    "cuteponymotes",
     "daylightemotes",
     "desktopponies",
     "FanficsEmotes",
