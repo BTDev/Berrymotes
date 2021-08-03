@@ -66,6 +66,7 @@ legacy_subreddits = [
     "mylittledraders",
     "mylittlekindle",
     "mylittleleague",
+    "mylittlemango",
     "mylittlepugnippets",
     "mylittlesketchheart",
     "mylittletwist",
