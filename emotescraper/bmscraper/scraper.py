@@ -83,6 +83,7 @@ class BMScraper(FileNameUtils):
                         css = fh.read()
                         self._process_stylesheet_response(200,
                                                           css,
+                                                          "text/css",
                                                           subreddit)
                 else:
                     logger.error("No css file found for legacy subreddit {}".format(subreddit))
@@ -202,13 +203,19 @@ class BMScraper(FileNameUtils):
             logger.error("Subreddit not set")
             return
 
-        if not response:
-            logger.error("Failed to fetch css for {}".format(subreddit))
-            return
+        if response is not None:
+            self._process_stylesheet_response(response.status_code,
+                                              response.text,
+                                              response.headers['Content-Type'],
+                                              subreddit)
+        else:
+            logger.error("Failed to get response when fetching css for {}".format(subreddit))
+            self._process_stylesheet_response(None,
+                                              None,
+                                              None,
+                                              subreddit)
 
-        self._process_stylesheet_response(response.status_code, response.text, subreddit)
-
-    def _process_stylesheet_response(self, status_code, text, subreddit=None):
+    def _process_stylesheet_response(self, status_code, text, content_type, subreddit=None):
         if not subreddit:
             logger.error("Subreddit not set")
             return
@@ -222,6 +229,8 @@ class BMScraper(FileNameUtils):
 
         if status_code != 200:
             logger.error("Failed to fetch css for {} (Status {})".format(subreddit, status_code))
+        elif content_type != "text/css":
+            logger.error("Got something that wasn't css for {} (Context-Type {})".format(subreddit, content_type))
         else:
             logger.debug('Found css for {}'.format(subreddit))
             css = text
