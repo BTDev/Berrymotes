@@ -287,8 +287,21 @@ Bem.emoteRefresh = async function (cache) {
     const results = await Promise.allSettled(urls.map(url =>
         fetch(url, { cache: cache === false ? 'reload' : 'default' }).then(resp => resp.json())
     ));
-    Bem.emotes = results.filter(result => result.status === 'fulfilled').flatMap(result => result.value);
+    const emoteSets = results.filter(result => result.status === 'fulfilled').map(result => result.value);
+
+    Bem.emotes = emoteSets[0];
     Bem.buildEmoteMap();
+    
+    for (const emoteSet of emoteSets.slice(1)) {
+        for (const emote of emoteSet) {
+            // prioritize emotes from earlier sources by removing existing names
+            emote.names = emote.names.filter(name => !Bem.map.has(name));
+            if (emote.names.length > 0) {
+                Bem.emotes.push(emote);
+            }
+        }
+        Bem.buildEmoteMap();
+    }
 };
 
 Bem.apngSupported = true;
