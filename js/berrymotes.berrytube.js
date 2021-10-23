@@ -278,17 +278,17 @@ Bem.settings = {
 
 Bem.settings.set('siteWhitelist', ['berrytube.tv', 'www.berrytube.tv']);
 
-Bem.emoteRefresh = function (cache) {
-    cache = cache !== false;
-    $.ajax({
-        cache: cache,
-        url: Bem.data_url || (Bem.cdn_origin + '/data/berrymotes_json_data.v2.json'),
-        dataType: 'json',
-        success: function (data) {
-            Bem.emotes = data;
-            Bem.buildEmoteMap();
-        }
-    });
+Bem.emoteRefresh = async function (cache) {
+    let urls = Bem.data_url || (Bem.cdn_origin + '/data/berrymotes_json_data.v2.json');
+    if (!Array.isArray(urls)) {
+        urls = [urls];
+    }
+
+    const results = await Promise.allSettled(urls.map(url =>
+        fetch(url, { cache: cache === false ? 'reload' : 'default' }).then(resp => resp.json())
+    ));
+    Bem.emotes = results.filter(result => result.status === 'fulfilled').flatMap(result => result.value);
+    Bem.buildEmoteMap();
 };
 
 Bem.apngSupported = true;
