@@ -9,5 +9,20 @@
  */
 var css = document.createElement("style");
 css.type = "text/css";
-css.innerHTML = ".bem-invert { -webkit-filter: invert(100%); } .bem-hue-rotate { -webkit-filter: hue-rotate(180deg); } ";
+css.innerHTML = `
+    .bem-invert { -webkit-filter: invert(100%); } 
+    .bem-hue-rotate { -webkit-filter: hue-rotate(180deg); } 
+    .bem-mono { -webkit-filter: grayscale(); } 
+    .bem-gay {
+        animation: bem-gay-anim 4s linear infinite;
+    }
+    @keyframes bem-gay-anim {
+        0% {
+            filter: hue-rotate(0deg);
+        }
+        100% {
+            filter: hue-rotate(360deg);
+        }
+    }
+`;
 document.body.appendChild(css);
