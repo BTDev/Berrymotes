@@ -176,7 +176,9 @@ Bem.cdn_origin = Bem.cdn_origin || Bem.origin;
         'sup',
         'td',
         'tt',
-        'u'
+        'u',
+        'mono',
+        'gay'
     ];
 
     Bem.formatInnerText = function (innerText) {
@@ -467,6 +469,12 @@ Bem.cdn_origin = Bem.cdn_origin || Bem.origin;
                     }
                     else if (Bem.enableInvert && flags[i] == 'i') {
                         $emote.addClass('bem-hue-rotate');
+                    }
+                    else if (Bem.enableInvert && flags[i] == 'gay') {
+                        $emote.addClass('bem-gay');
+                    }
+                    else if (Bem.enableInvert && flags[i] == 'mono') {
+                        $emote.addClass('bem-mono');
                     }
                     if (Bem.enableBrody && (flags[i] == 'brody')) {
                         animations.push((reverse ? '-' : '') + 'brody 1.27659s infinite ease');
