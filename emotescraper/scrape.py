@@ -48,7 +48,9 @@ scraper.legacy_subreddits = legacy_subreddits
 scraper.image_blacklist = image_blacklist
 scraper.nsfw_subreddits = nsfw_subreddits
 scraper.emote_info = emote_info
-scraper.rate_limit_lock = TokenBucket(15, 30)
+
+#these values seem to be quite stable (occasional 429 does happen though, because nothing makes sense)
+scraper.rate_limit_lock = TokenBucket(1, 6)
 scraper.tags_data = requests.get(CDN_ORIGIN + "/data/tags.js").json()
 
 start = time.time()
