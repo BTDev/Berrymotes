@@ -41,8 +41,8 @@ factory = UserscriptEmotesProcessorFactory(single_emotes_filename=os.path.join('
                                            apng_url=CDN_ORIGIN + '/images/{}/{}')
 
 scraper = BMScraper(factory)
-scraper.user = os.environ['REDDIT_USERNAME']
-scraper.password = os.environ['REDDIT_PASSWORD']
+scraper.user = None #os.environ['REDDIT_USERNAME']
+scraper.password = None #os.environ['REDDIT_PASSWORD']
 scraper.subreddits = subreddits
 scraper.legacy_subreddits = legacy_subreddits
 scraper.image_blacklist = image_blacklist
@@ -57,12 +57,12 @@ logger.info("Finished scrape in {}.".format(time.time() - start))
 
 def output(basename, data):
     with open(basename, 'wb') as fh:
-        fh.write(data)
+        fh.write(data.encode('utf-8'))
 
     fname = basename + '.gz'
     try:
         with gzip.open(fname, 'wb') as fh:
-            fh.write(data)
+            fh.write(data.encode('utf-8'))
     except:
         logger.exception('Unable to gzip emote data')
         try:

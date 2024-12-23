@@ -18,7 +18,7 @@ from shutil import copyfile
 from glob import glob
 from PIL import Image
 import hashlib
-from StringIO import StringIO
+from io import StringIO
 
 import logging
 logger = logging.getLogger(__name__)
@@ -173,7 +173,7 @@ class AndroidEmotesProcessor(BasicEmotesProcessor, APNGCheck):
                     with self.scraper.mutex:
                         self._emotes.append(a_emote)
                     
-                except Exception, e:
+                except (Exception, e):
                     logger.exception(e)
                     raise e
             

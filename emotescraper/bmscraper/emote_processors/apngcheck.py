@@ -14,4 +14,7 @@
 
 class APNGCheck(object):
     def is_apng(self, image_data):
-        return 'acTL' in image_data[0:image_data.find('IDAT')]    
+        if isinstance(image_data, bytes):
+            return b'acTL' in image_data[0:image_data.find(b'IDAT')]
+        else:
+            return 'acTL' in image_data[0:image_data.find('IDAT')]

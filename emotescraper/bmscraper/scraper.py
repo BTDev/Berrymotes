@@ -21,10 +21,12 @@ import re
 from collections import defaultdict
 import itertools
 import os
-from downloadjob import DownloadJob
-from filenameutils import FileNameUtils
+from .downloadjob import DownloadJob
+from .filenameutils import FileNameUtils
 from multiprocessing import cpu_count
 from dateutil import parser
+from operator import itemgetter
+from .ratelimiter import TokenBucket
 
 import logging
 
@@ -68,18 +70,20 @@ class BMScraper(FileNameUtils):
     def _dedupe_emotes(self):
         with self.mutex:
             for subreddit in self.subreddits:
-                subreddit_emotes = [x for x in self.emotes if x['sr'] == subreddit]
-                other_subreddits_emotes = [x for x in self.emotes if x['sr'] != subreddit]
+                subreddit_emotes = [
+                    x for x in self.emotes if x['sr'] == subreddit]
+                other_subreddits_emotes = [
+                    x for x in self.emotes if x['sr'] != subreddit]
                 for subreddit_emote in subreddit_emotes:
                     for emote in other_subreddits_emotes:
                         for name in subreddit_emote['names']:
                             if name in emote['names']:
                                 emote['names'].remove(name)
-                                logger.debug('Removing {} from {}'.format(name, emote['sr']))
+                                logger.debug(
+                                    'Removing {} from {}'.format(name, emote['sr']))
                                 if len(emote['names']) == 0:
                                     logger.debug('Completely removed')
                                     self.emotes.remove(emote)
-
 
     def _fetch_css(self):
         logger.debug("Fetching css using {} threads".format(self.workers))
@@ -89,8 +93,10 @@ class BMScraper(FileNameUtils):
             os.makedirs(self.cache_dir)
 
         for subreddit in self.subreddits:
+
             if subreddit in self.legacy_subreddits:
-                legacy_file = '{}/../legacy_css/{}.css'.format(os.path.dirname(__file__), subreddit)
+                legacy_file = '{}/../legacy_css/{}.css'.format(
+                    os.path.dirname(__file__), subreddit)
                 if os.path.exists(legacy_file):
                     with open(legacy_file) as fh:
                         css = fh.read()
@@ -99,10 +105,12 @@ class BMScraper(FileNameUtils):
                                                           "text/css",
                                                           subreddit)
                 else:
-                    logger.error("No css file found for legacy subreddit {}".format(subreddit))
+                    logger.error(
+                        "No css file found for legacy subreddit {}".format(subreddit))
             else:
                 workpool.put(DownloadJob(self._requests,
-                                         'https://old.reddit.com/r/{}/stylesheet'.format(subreddit),
+                                         'https://old.reddit.com/r/{}/stylesheet'.format(
+                                             subreddit),
                                          retry=5,
                                          rate_limit_lock=self.rate_limit_lock,
                                          callback=self._callback_fetch_stylesheet,
@@ -112,7 +120,8 @@ class BMScraper(FileNameUtils):
         workpool.join()
 
     def _download_images(self):
-        logger.debug("Downloading images using {} threads".format(self.workers))
+        logger.debug(
+            "Downloading images using {} threads".format(self.workers))
         workpool = WorkerPool(size=self.workers)
 
         # cache emotes
@@ -122,10 +131,13 @@ class BMScraper(FileNameUtils):
                 if not image_url:
                     continue
 
-                file_path = self.get_file_path(image_url, rootdir=self.cache_dir)
+                file_path = self.get_file_path(
+                    image_url, rootdir=self.cache_dir)
                 if not os.path.isfile(file_path):
                     # Temp workaround for downloading apngs straight from amazon instead of broken ones from cloudflare
-                    image_url = re.sub(r'^(https?:)?//', 'https://s3.amazonaws.com/', image_url)
+                    if "s3.amazonaws.com" not in image_url:
+                        image_url = re.sub(r'^(https?:)?//', 'https://s3.amazonaws.com/', image_url)
+                        
                     workpool.put(DownloadJob(self._requests,
                                              image_url,
                                              retry=5,
@@ -152,6 +164,7 @@ class BMScraper(FileNameUtils):
         workpool.join()
 
     def scrape(self):
+        logger.debug(self.rate_limit_lock)
         # Login
         if self.user and self.password:
             body = {'user': self.user, 'passwd': self.password, "rem": False}
@@ -175,7 +188,7 @@ class BMScraper(FileNameUtils):
         if not css:
             return None
 
-        re_emote = re.compile('a\[href[|^$]?=["\']/([\w:]+)["\']\](:hover)?(\sem|\sstrong)?')
+        re_emote = re.compile(r'a\[href[|^$]?=["\']\/([\w:]+)["\']\](:hover)?(\sem|\sstrong)?')
         emotes_staging = defaultdict(dict)
 
         for rule in css.rules:
@@ -237,8 +250,8 @@ class BMScraper(FileNameUtils):
 
         css_path = os.path.sep.join([self.cache_dir, subreddit + '.css'])
         if os.path.exists(css_path):
-            with open(css_path) as css_file:
-                css = css_file.read().decode('utf8')
+            with open(css_path, 'r', encoding='utf8') as css_file:
+                css = css_file.read()
 
         if status_code != 200:
             logger.error("Failed to fetch css for {} (Status {})".format(subreddit, status_code))
@@ -247,8 +260,8 @@ class BMScraper(FileNameUtils):
         else:
             logger.debug('Found css for {}'.format(subreddit))
             css = text
-            with open(css_path, 'w') as css_file:
-                css_file.write(css.encode('utf8'))
+            with open(css_path, 'w', encoding='utf8') as css_file:
+                css_file.write(css)
 
         if css == '':
             logger.error("No css for {} found".format(subreddit))
@@ -258,16 +271,17 @@ class BMScraper(FileNameUtils):
         if not emotes_staging:
             return
 
-        key_func = lambda e: e[1]
-        for emote, group in itertools.groupby(sorted(emotes_staging.iteritems(), key=key_func), key_func):
-            emote['names'] = [a[0].encode('ascii', 'ignore') for a in group]
+        #group the emotes based on their background-image css field, python2 could do entire object, python3 does not
+        for emote, group in itertools.groupby(sorted(emotes_staging.items(), key=lambda e: str(e[1])), lambda e: e[1]):
+            emote['names'] = [a[0] for a in group]
+            
             if 'tags' not in emote:
                 emote['tags'] = []
             for name in emote['names']:
                 meta_data = next((x for x in self.emote_info if x['name'] == name), None)
 
                 if meta_data:
-                    for key, val in meta_data.iteritems():
+                    for key, val in meta_data.items():
                         if key != 'name':
                             emote[key] = val
 
@@ -279,7 +293,7 @@ class BMScraper(FileNameUtils):
                     if 'tags' not in emote:
                         emote['tags'] = []
                     logger.debug('Tagging: {} with {}'.format(name, tag_data))
-                    emote['tags'].extend(k for k, v in tag_data['tags'].iteritems() if v['score'] >= 1)
+                    emote['tags'].extend(k for k, v in tag_data['tags'].items() if v['score'] >= 1)
                     if tag_data.get('specialTags'):
                         emote['tags'].extend(tag_data['specialTags'])
 
