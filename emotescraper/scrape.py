@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # --------------------------------------------------------------------
 #
 # Copyright (C) 2013 Marminator <cody_y@shaw.ca>
@@ -41,8 +41,8 @@ factory = UserscriptEmotesProcessorFactory(single_emotes_filename=os.path.join('
                                            apng_url=CDN_ORIGIN + '/images/{}/{}')
 
 scraper = BMScraper(factory)
-scraper.user = None #os.environ['REDDIT_USERNAME']
-scraper.password = None #os.environ['REDDIT_PASSWORD']
+scraper.user = os.environ['REDDIT_USERNAME']
+scraper.password = os.environ['REDDIT_PASSWORD']
 scraper.subreddits = subreddits
 scraper.legacy_subreddits = legacy_subreddits
 scraper.image_blacklist = image_blacklist

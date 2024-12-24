@@ -271,7 +271,7 @@ class BMScraper(FileNameUtils):
         if not emotes_staging:
             return
 
-        #group the emotes based on their background-image css field, python2 could do entire object, python3 does not
+        #group the emotes based on their css rule content
         for emote, group in itertools.groupby(sorted(emotes_staging.items(), key=lambda e: str(e[1])), lambda e: e[1]):
             emote['names'] = [a[0] for a in group]
             
