@@ -173,7 +173,7 @@ class AndroidEmotesProcessor(BasicEmotesProcessor, APNGCheck):
                     with self.scraper.mutex:
                         self._emotes.append(a_emote)
                     
-                except (Exception, e):
+                except Exception as e:
                     logger.exception(e)
                     raise e
             

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # --------------------------------------------------------------------
 #
 # Copyright (C) 2013 Daniel Triendl <daniel@pew.cc>
@@ -45,7 +45,7 @@ for subreddit in subreddits:
     if not os.path.exists(os.path.dirname(emotes_file)):
         os.makedirs(os.path.dirname(emotes_file))
 
-    emotes_data = dumps(subreddit_emotes, separators=(',', ': '));
+    emotes_data = dumps(subreddit_emotes, separators=(',', ': '))
     emotes_data_old = ''
     if (os.path.exists(emotes_file)):
         f = gzip.open(emotes_file, 'r')
