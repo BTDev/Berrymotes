@@ -34,7 +34,7 @@ class AbstractEmotesProcessor(Job):
             logger.debug('Processing {}'.format(self.image_url))
                         
             self.process_group()
-        except Exception, e:
+        except Exception as e:
             logger.exception(e)
         
     def process_group(self):        

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # --------------------------------------------------------------------
 #
 # Copyright (C) 2013 Daniel Triendl <daniel@pew.cc>
@@ -30,12 +30,12 @@ scraper.legacy_subreddits = legacy_subreddits
 scraper.image_blacklist = image_blacklist_android
 scraper.nsfw_subreddits = nsfw_subreddits
 scraper.emote_info = emote_info
-scraper.rate_limit_lock = TokenBucket(15, 30)
+scraper.rate_limit_lock = TokenBucket(1, 6)
 
 scraper.scrape()
 
 f = gzip.open(os.path.join('..', 'single_emotes', 'emotes.json.gz'), 'wb')
-f.write(dumps(factory.emotes, separators=(',', ': ')))
+f.write(dumps(factory.emotes, separators=(',', ': ')).encode('utf-8'))
 f.close()
 
 for subreddit in subreddits:
@@ -45,7 +45,7 @@ for subreddit in subreddits:
     if not os.path.exists(os.path.dirname(emotes_file)):
         os.makedirs(os.path.dirname(emotes_file))
 
-    emotes_data = dumps(subreddit_emotes, separators=(',', ': '));
+    emotes_data = dumps(subreddit_emotes, separators=(',', ': '))
     emotes_data_old = ''
     if (os.path.exists(emotes_file)):
         f = gzip.open(emotes_file, 'r')
@@ -54,9 +54,9 @@ for subreddit in subreddits:
 
     if emotes_data != emotes_data_old:
         f = gzip.open(emotes_file, 'wb')
-        f.write(emotes_data)
+        f.write(emotes_data.encode('utf-8'))
         f.close()
 
 f = gzip.open(os.path.join('..', 'single_emotes', 'subreddits.json.gz'), 'wb')
-f.write(dumps(subreddits, separators=(',', ': ')))
+f.write(dumps(subreddits, separators=(',', ': ')).encode('utf-8'))
 f.close()

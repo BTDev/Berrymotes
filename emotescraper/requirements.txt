@@ -2,5 +2,5 @@
 python-dateutil
 workerpool
 tinycss
-Pillow<2.0
+Pillow
 requests

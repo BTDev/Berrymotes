@@ -41,7 +41,7 @@ class DownloadJob(Job):
                     response = self._requests.get(self._url)
                     if ("over18" in response.url):
                         response = self._requests.post(response.url, {"over18": "yes"})
-                except Exception, e:
+                except Exception as e:
                     logger.exception(e)
                     response = None
                 finally:
@@ -52,5 +52,5 @@ class DownloadJob(Job):
 
             if self._callback:
                 self._callback(response, **self._callbackargs)
-        except Exception, e:
+        except Exception as e:
             logger.exception(e)

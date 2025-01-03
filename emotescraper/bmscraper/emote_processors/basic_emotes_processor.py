@@ -15,7 +15,7 @@
 from .abstract_emotes_processor import AbstractEmotesProcessorFactory, AbstractEmotesProcessor
 from ..filenameutils import FileNameUtils
 from PIL import Image
-from StringIO import StringIO
+from io import StringIO, BytesIO
 import os
 
 import logging
@@ -63,7 +63,7 @@ class BasicEmotesProcessor(AbstractEmotesProcessor, FileNameUtils):
                     f = open(file_name, 'wb')
                     cropped.save(f)
                     f.close()
-                except Exception, e:
+                except Exception as e:
                     logger.exception(e)
 
     def load_image(self, image_file):
@@ -71,7 +71,7 @@ class BasicEmotesProcessor(AbstractEmotesProcessor, FileNameUtils):
         self.image_data = f.read()
         f.close()
 
-        self.image = Image.open(StringIO(self.image_data))
+        self.image = Image.open(BytesIO(self.image_data))
 
     def extract_single_image(self, emote, image):
         x = 0
