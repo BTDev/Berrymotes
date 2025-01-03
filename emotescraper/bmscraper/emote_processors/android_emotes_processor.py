@@ -18,7 +18,7 @@ from shutil import copyfile
 from glob import glob
 from PIL import Image
 import hashlib
-from io import StringIO
+from io import StringIO, BytesIO
 
 import logging
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ def djb2(s):
 def hashfile(filepath, prefix=None):
     sha1 = hashlib.sha1()
     if prefix:
-        sha1.update(prefix)
+        sha1.update(prefix.encode('utf-8'))
     f = open(filepath, 'rb')
     try:
         sha1.update(f.read())
@@ -125,9 +125,11 @@ class AndroidEmotesProcessor(BasicEmotesProcessor, APNGCheck):
                   
     def _calculate_delay(self, delay_file):
         # Calucate delay in ms
-        f = open(delay_file, 'rb')
-        delay_text = f.readline().strip()[6:]
+        f = open(delay_file, 'r')
+        delay_text = str(f.readline().strip()[6:])
         f.close()       
+
+
         
         return int(round(float(delay_text[0:delay_text.index('/')]) / float(delay_text[delay_text.index('/') + 1:]) * 1000))  
     
@@ -143,7 +145,7 @@ class AndroidEmotesProcessor(BasicEmotesProcessor, APNGCheck):
         if self.is_apng(self.image_data):
             logger.debug('Found apng image: %s', self._image_name)
             for frame in self._apng_frames:
-                image = Image.open(StringIO(frame['image']))
+                image = Image.open(BytesIO(frame['image']))
                 cropped = self.extract_single_image(emote, image)
                 
                 file_name = self._single_emotes_filename_apng.format(emote['sr'], max(emote['names'], key=len), frame['index'])
