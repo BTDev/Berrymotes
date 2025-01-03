@@ -126,11 +126,9 @@ class AndroidEmotesProcessor(BasicEmotesProcessor, APNGCheck):
     def _calculate_delay(self, delay_file):
         # Calucate delay in ms
         f = open(delay_file, 'r')
-        delay_text = str(f.readline().strip()[6:])
-        f.close()       
+        delay_text = f.readline().strip()[6:]
+        f.close()
 
-
-        
         return int(round(float(delay_text[0:delay_text.index('/')]) / float(delay_text[delay_text.index('/') + 1:]) * 1000))  
     
     def _hash_emote(self, emote):
