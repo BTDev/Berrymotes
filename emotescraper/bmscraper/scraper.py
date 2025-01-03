@@ -167,7 +167,6 @@ class BMScraper(FileNameUtils):
         workpool.join()
 
     def scrape(self):
-        logger.debug(self.rate_limit_lock)
         # Login
         if self.user and self.password:
             body = {'user': self.user, 'passwd': self.password, "rem": False}
