@@ -124,6 +124,9 @@ class BMScraper(FileNameUtils):
             "Downloading images using {} threads".format(self.workers))
         workpool = WorkerPool(size=self.workers)
 
+        # we are not constrained by the Reddit rate limits here 
+        rate_limit = TokenBucket(15, 30)
+
         # cache emotes
         key_func = lambda e: e['background-image']
         with self.mutex:
@@ -141,7 +144,7 @@ class BMScraper(FileNameUtils):
                     workpool.put(DownloadJob(self._requests,
                                              image_url,
                                              retry=5,
-                                             rate_limit_lock=self.rate_limit_lock,
+                                             rate_limit_lock=rate_limit,
                                              callback=self._callback_download_image,
                                              **{'image_path': file_path}))
 
