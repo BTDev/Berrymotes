@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # --------------------------------------------------------------------
 #
 # Copyright (C) 2013 Daniel Triendl <daniel@pew.cc>
