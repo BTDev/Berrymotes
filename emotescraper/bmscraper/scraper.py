@@ -25,6 +25,7 @@ from downloadjob import DownloadJob
 from filenameutils import FileNameUtils
 from multiprocessing import cpu_count
 from dateutil import parser
+from ratelimiter import TokenBucket
 
 import logging
 
@@ -128,7 +129,10 @@ class BMScraper(FileNameUtils):
                 file_path = self.get_file_path(image_url, rootdir=self.cache_dir)
                 if not os.path.isfile(file_path):
                     # Temp workaround for downloading apngs straight from amazon instead of broken ones from cloudflare
-                    image_url = re.sub(r'^(https?:)?//', 'https://s3.amazonaws.com/', image_url)
+                    # there are some emotes that already have amazonaws in their url, so don't replace it again
+                    if "s3.amazonaws.com" not in image_url:
+                        image_url = re.sub(r'^(https?:)?//', 'https://s3.amazonaws.com/', image_url)
+
                     workpool.put(DownloadJob(self._requests,
                                              image_url,
                                              retry=5,
