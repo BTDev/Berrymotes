@@ -138,9 +138,10 @@ class BMScraper(FileNameUtils):
                     image_url, rootdir=self.cache_dir)
                 if not os.path.isfile(file_path):
                     # Temp workaround for downloading apngs straight from amazon instead of broken ones from cloudflare
+                    # there are some emotes that already have amazonaws in their url, so don't replace it again
                     if "s3.amazonaws.com" not in image_url:
                         image_url = re.sub(r'^(https?:)?//', 'https://s3.amazonaws.com/', image_url)
-                        
+
                     workpool.put(DownloadJob(self._requests,
                                              image_url,
                                              retry=5,
