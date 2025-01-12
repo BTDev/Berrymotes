@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # --------------------------------------------------------------------
 #
 # Copyright (C) 2013 Marminator <cody_y@shaw.ca>
@@ -59,12 +59,12 @@ logger.info("Finished scrape in {}.".format(time.time() - start))
 
 def output(basename, data):
     with open(basename, 'wb') as fh:
-        fh.write(data)
+        fh.write(data.encode('utf-8'))
 
     fname = basename + '.gz'
     try:
         with gzip.open(fname, 'wb') as fh:
-            fh.write(data)
+            fh.write(data.encode('utf-8'))
     except:
         logger.exception('Unable to gzip emote data')
         try:
